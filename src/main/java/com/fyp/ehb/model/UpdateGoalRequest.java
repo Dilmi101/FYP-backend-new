@@ -13,7 +13,7 @@ public class UpdateGoalRequest {
 	private String startDate;
 	private String endDate;
 	private String unit;
-	private int target;
+	private String target;
 	private String priority;
 	private String reminder;
 	

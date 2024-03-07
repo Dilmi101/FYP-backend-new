@@ -2,7 +2,10 @@ package com.fyp.ehb.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fyp.ehb.domain.Customer;
+import com.fyp.ehb.domain.GoalHistory;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,4 +23,8 @@ public class GoalResponse {
     private String goalStatus;
     private String isRecurringGoal;
     private Customer customer;
+    private String remainingDays;
+    private String progressPercentage;
+    private String pendingTarget;
+    private List<GoalHistory> goalRecords;
 }
