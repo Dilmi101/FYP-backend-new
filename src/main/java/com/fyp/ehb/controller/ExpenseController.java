@@ -3,7 +3,9 @@ package com.fyp.ehb.controller;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,13 +21,27 @@ public class ExpenseController {
 	@Autowired
 	private ExpenseService expenseService;
 	
-	@PostMapping(value="/add")
-	public MainResponse addExpense(@RequestBody AddExpenseRequest addExpenseRequest) {
+	@PostMapping(value="/{customerId}/add")
+	public MainResponse addExpense(@RequestBody AddExpenseRequest addExpenseRequest, @PathVariable("customerId") String customerId) {
 	
-		HashMap<String, String> response = expenseService.addExpense(addExpenseRequest);
+		HashMap<String, String> response = expenseService.addExpense(customerId, addExpenseRequest);
+		
 		MainResponse mainResponse = new MainResponse();
 		mainResponse.setResponseCode("000");
-		mainResponse.setResponseObject(mainResponse);
+		mainResponse.setResponseObject(response);
+		
+		return mainResponse;
+	}
+	
+	@PutMapping(value="/{customerId}/update/{expenseId}")
+	public MainResponse editExpense(@RequestBody AddExpenseRequest addExpenseRequest, @PathVariable("customerId") String customerId,
+			@PathVariable("expenseId") String expenseId) {
+	
+		HashMap<String, String> response = expenseService.editExpense(customerId, expenseId, addExpenseRequest);
+		
+		MainResponse mainResponse = new MainResponse();
+		mainResponse.setResponseCode("000");
+		mainResponse.setResponseObject(response);
 		
 		return mainResponse;
 	}

@@ -10,7 +10,10 @@ public enum EmpowerHerBizError {
 	GOAL_NOT_UPDATED("6", "Goal updating failed."),
 	USERNAME_ALREADY_EXISTS("7", "Username already exists. Please enter another username."),
 	GOALS_NOT_FOUND("8", "No any goals found."),
-	INVALID_AMOUNT("9", "Invalid amount.");
+	INVALID_AMOUNT("9", "Invalid amount."),
+	EXPENSE_CREATION_FAILED("10", "Expense creation failed."),
+	EXPENSE_NOT_FOUND("11", "No such record for this ID."),
+	EXPENSE_UPDATE_FAILED("12", "Expense update failed.");
 	
 	private String errorCode;
 	private String errorMessage;
