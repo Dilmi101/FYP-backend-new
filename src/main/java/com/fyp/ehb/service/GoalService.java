@@ -14,7 +14,7 @@ public interface GoalService {
 
     HashMap<String, String> deleteGoal(String goalId) throws Exception;
 
-    List<GoalResponse> getGoals() throws Exception;
+    List<GoalResponse> getGoals(String customerId) throws Exception;
 
     GoalResponse getGoalById(String id) throws Exception;
 

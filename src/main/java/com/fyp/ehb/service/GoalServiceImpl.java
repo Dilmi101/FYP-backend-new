@@ -174,7 +174,7 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public List<GoalResponse> getGoals() throws Exception {
+    public List<GoalResponse> getGoals(String customerId) throws Exception {
 
         List<Goal> goals = new ArrayList<>();
 

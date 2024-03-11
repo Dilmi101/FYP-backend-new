@@ -62,10 +62,10 @@ public class GoalController {
 		return response;
 	}
 
-	@GetMapping(value="/goalList")
-	public MainResponse getGoals() throws Exception {
+	@GetMapping(value="/{customerId}/goalList")
+	public MainResponse getGoals(@PathVariable("customerId") String customerId) throws Exception {
 
-		List<GoalResponse> goals = goalService.getGoals();
+		List<GoalResponse> goals = goalService.getGoals(customerId);
 
 		MainResponse mainResponse = new MainResponse();
 		mainResponse.setResponseCode("000");
