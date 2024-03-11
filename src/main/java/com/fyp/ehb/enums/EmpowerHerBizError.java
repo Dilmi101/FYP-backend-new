@@ -13,7 +13,8 @@ public enum EmpowerHerBizError {
 	INVALID_AMOUNT("9", "Invalid amount."),
 	EXPENSE_CREATION_FAILED("10", "Expense creation failed."),
 	EXPENSE_NOT_FOUND("11", "No such record for this ID."),
-	EXPENSE_UPDATE_FAILED("12", "Expense update failed.");
+	EXPENSE_UPDATE_FAILED("12", "Expense update failed."),
+	EXPENSE_DELETE_FAILED("13", "Expense delete failed.");
 	
 	private String errorCode;
 	private String errorMessage;

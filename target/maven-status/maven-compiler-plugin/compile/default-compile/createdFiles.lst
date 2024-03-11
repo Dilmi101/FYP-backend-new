@@ -1,4 +1,6 @@
+com\fyp\ehb\domain\GoalHistory.class
 com\fyp\ehb\model\UpdateGoalRequest.class
+com\fyp\ehb\repository\GoalHistoryDao.class
 com\fyp\ehb\controller\GoalController.class
 com\fyp\ehb\domain\Goal.class
 com\fyp\ehb\enums\Status.class
@@ -23,6 +25,7 @@ com\fyp\ehb\service\CustomerServiceImpl.class
 com\fyp\ehb\model\MainResponse.class
 com\fyp\ehb\service\CustomerService.class
 com\fyp\ehb\controller\BudgetController.class
+com\fyp\ehb\repository\ExpenseDao.class
 com\fyp\ehb\service\RawMaterialService.class
 com\fyp\ehb\service\GoalServiceImpl.class
 com\fyp\ehb\service\RawMaterialServiceImpl.class
