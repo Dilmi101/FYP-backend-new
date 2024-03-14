@@ -12,7 +12,7 @@ import com.fyp.ehb.model.MainResponse;
 @RequestMapping("/api/rawMaterial")
 public class RawMaterialController {
 	
-	@PostMapping(value="/add")
+	@PostMapping(value="/{customerId}/add")
 	public MainResponse addRawMaterial(@RequestBody AddExpenseRequest addExpenseRequest) {
 				
 		MainResponse mainResponse = new MainResponse();

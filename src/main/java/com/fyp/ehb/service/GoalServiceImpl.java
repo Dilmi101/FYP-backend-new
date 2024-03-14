@@ -160,10 +160,10 @@ public class GoalServiceImpl implements GoalService {
             HashMap<String, String> hm = new HashMap<>();
 
             if(updatedGoal != null){
-                hm.put("Message", "Success");
+                hm.put("message", "Success");
             }
             else{
-                hm.put("Message", "Failed");
+                hm.put("message", "Failed");
             }
 
             return hm;
@@ -313,10 +313,10 @@ public class GoalServiceImpl implements GoalService {
                 HashMap<String, String> hm = new HashMap<>();
 
                 if(history != null){
-                    hm.put("Message", "Success");
+                    hm.put("message", "Success");
                 }
                 else{
-                    hm.put("Message", "Failed");
+                    hm.put("message", "Failed");
                 }
                 return hm;
             }

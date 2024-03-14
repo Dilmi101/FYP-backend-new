@@ -17,4 +17,6 @@ public interface ExpenseService {
 
 	public List<ExpenseResponse> getExpenseList(String customerId);
 
+	public ExpenseResponse getExpenseById(String expenseId);
+
 }

@@ -219,4 +219,40 @@ public class ExpenseServiceImpl implements ExpenseService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public ExpenseResponse getExpenseById(String expenseId) {
+
+		ExpenseResponse response = new ExpenseResponse();
+		
+		Optional<Expense> expense = expenseDao.findById(expenseId);
+		
+		if(!expense.isPresent()) {
+			throw new EmpowerHerBizException(EmpowerHerBizError.EXPENSE_NOT_FOUND);
+		}
+		
+		Expense existingExpense = expense.get();
+		
+		Date startDate = existingExpense.getStartDate();  
+		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-mm-dd");  
+		String strDate = dateFormat1.format(startDate);  
+		
+		Date sendDate = existingExpense.getStartDate();  
+		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-mm-dd");  
+		String eDate = dateFormat2.format(sendDate);  
+		
+		response.setAmount(existingExpense.getAmount());
+		response.setCustomer(existingExpense.getCustomer());
+		response.setDuration(existingExpense.getDuration());
+		response.setEndDate(eDate);
+		response.setExpenseCategory(existingExpense.getExpenseCategory());
+		response.setExpenseDescription(existingExpense.getExpenseDescription());
+		response.setExpenseStatus(existingExpense.getExpenseStatus());
+		response.setExpenseTitle(existingExpense.getExpenseTitle());
+		response.setId(existingExpense.getId());
+		response.setReminder(existingExpense.getReminder());
+		response.setStartDate(strDate);
+				
+		return response;
+	}
+
 }

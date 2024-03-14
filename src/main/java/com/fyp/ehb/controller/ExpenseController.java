@@ -73,4 +73,16 @@ public class ExpenseController {
 		
 		return mainResponse;
 	}
+	
+	@GetMapping(value="/{expenseId}")
+	public MainResponse getExpenseById(@PathVariable(value = "expenseId") String expenseId) {
+	
+		ExpenseResponse response = expenseService.getExpenseById(expenseId);
+		
+		MainResponse mainResponse = new MainResponse();
+		mainResponse.setResponseCode("000");
+		mainResponse.setResponseObject(response);
+		
+		return mainResponse;
+	}
 }
