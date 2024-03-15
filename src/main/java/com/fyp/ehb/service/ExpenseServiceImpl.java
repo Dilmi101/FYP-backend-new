@@ -22,11 +22,13 @@ import org.springframework.stereotype.Service;
 
 import com.fyp.ehb.domain.Customer;
 import com.fyp.ehb.domain.Expense;
+import com.fyp.ehb.domain.Goal;
 import com.fyp.ehb.enums.EmpowerHerBizError;
 import com.fyp.ehb.enums.Status;
 import com.fyp.ehb.exception.EmpowerHerBizException;
 import com.fyp.ehb.model.AddExpenseRequest;
 import com.fyp.ehb.model.ExpenseResponse;
+import com.fyp.ehb.model.GoalResponse;
 import com.fyp.ehb.repository.CustomerDao;
 import com.fyp.ehb.repository.ExpenseDao;
 
@@ -43,7 +45,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     private MongoTemplate mongoTemplate;
 
 	@Override
-	public HashMap<String, String> addExpense(String customerId, AddExpenseRequest addExpenseRequest) {
+	public HashMap<String, String> addExpense(String customerId, AddExpenseRequest addExpenseRequest) throws Exception {
 		
 		Optional<Customer> customer = customerDao.findById(customerId);
 		
@@ -93,7 +95,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	public HashMap<String, String> editExpense(String customerId, String expenseId,
-			AddExpenseRequest addExpenseRequest) {
+			AddExpenseRequest addExpenseRequest) throws Exception {
 		
 		Optional<Customer> customer = customerDao.findById(customerId);
 		
@@ -150,7 +152,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public HashMap<String, String> deleteExpense(String customerId, String expenseId) {
+	public HashMap<String, String> deleteExpense(String customerId, String expenseId) throws Exception {
 
 		Optional<Customer> customer = customerDao.findById(customerId);
 		
@@ -181,7 +183,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public List<ExpenseResponse> getExpenseList(String customerId) {
+	public List<ExpenseResponse> getExpenseList(String customerId) throws Exception{
 		
 		Optional<Customer> customer = customerDao.findById(customerId);
 		
@@ -220,7 +222,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public ExpenseResponse getExpenseById(String expenseId) {
+	public ExpenseResponse getExpenseById(String expenseId) throws Exception{
 
 		ExpenseResponse response = new ExpenseResponse();
 		
@@ -236,9 +238,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-mm-dd");  
 		String strDate = dateFormat1.format(startDate);  
 		
-		Date sendDate = existingExpense.getStartDate();  
+		Date endDate = existingExpense.getStartDate();  
 		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-mm-dd");  
-		String eDate = dateFormat2.format(sendDate);  
+		String eDate = dateFormat2.format(endDate);  
 		
 		response.setAmount(existingExpense.getAmount());
 		response.setCustomer(existingExpense.getCustomer());
@@ -253,6 +255,80 @@ public class ExpenseServiceImpl implements ExpenseService {
 		response.setStartDate(strDate);
 				
 		return response;
+	}
+
+	@Override
+	public List<ExpenseResponse> searchExpenses(String status, String category, String fromDate, String toDate)
+			throws Exception {
+		
+		List<ExpenseResponse> exList = new ArrayList<>();
+		
+	    String sDate = fromDate;  
+	    Date startDate = new Date();
+		try {
+			startDate = new SimpleDateFormat("yyyy-MM-dd").parse(sDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	      
+	    String eDate = toDate;  
+	    Date endDate = new Date();
+		try {
+			endDate = new SimpleDateFormat("yyyy-MM-dd").parse(eDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+        Query query = new Query();
+
+        if(status != null && !status.isEmpty()) {
+            query.addCriteria(Criteria.where("expenseStatus").is(status));
+        }
+        if(category != null && !category.isEmpty()) {
+            query.addCriteria(Criteria.where("expenseCategory").is(category));
+        }
+        if(fromDate != null && !fromDate.isEmpty()) {
+            query.addCriteria(Criteria.where("startDate").gte(startDate));
+        }
+        if(toDate != null && !toDate.isEmpty()) {
+            query.addCriteria(Criteria.where("endDate").lte(endDate));
+        }
+
+        List<Expense> expenseList =  mongoTemplate.find(query, Expense.class);
+        
+        if(!expenseList.isEmpty() && expenseList != null) {
+        	
+        	for(Expense e : expenseList) {
+        		
+        		ExpenseResponse expenseResponse = new ExpenseResponse();
+        		        		
+        		Date sd = e.getStartDate();  
+        		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-mm-dd");  
+        		String strDate = dateFormat1.format(sd);  
+        		
+        		Date endD = e.getStartDate();  
+        		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-mm-dd");  
+        		String ed = dateFormat2.format(endD);  
+        		
+        		expenseResponse.setAmount(e.getAmount());
+        		expenseResponse.setCustomer(e.getCustomer());
+        		expenseResponse.setDuration(e.getDuration());
+        		expenseResponse.setEndDate(ed);
+        		expenseResponse.setExpenseCategory(e.getExpenseCategory());
+        		expenseResponse.setExpenseDescription(e.getExpenseDescription());
+        		expenseResponse.setExpenseStatus(e.getExpenseStatus());
+        		expenseResponse.setExpenseTitle(e.getExpenseTitle());
+        		expenseResponse.setId(e.getId());
+        		expenseResponse.setReminder(e.getReminder());
+        		expenseResponse.setStartDate(strDate);
+        		
+        		exList.add(expenseResponse);
+        	}
+        } else {
+        	new ArrayList<>();
+        }
+        
+		return exList;
 	}
 
 }
