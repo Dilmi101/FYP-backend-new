@@ -28,7 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
     private BusinessDao businessDao;
 
     @Override
-    public Customer registerCustomer(SignupRequest signupRequest) throws Exception {
+    public Customer registerCustomer(SignupRequest signupRequest) throws EmpowerHerBizException {
 
         Customer customer = new Customer();
 
@@ -67,8 +67,16 @@ public class CustomerServiceImpl implements CustomerService {
     }
     
 	@Override
-	public CustomerResponse login(String username, String password) throws Exception {
+	public CustomerResponse login(String username, String password) throws EmpowerHerBizException {
 
+		if(username == null || username.isEmpty()) {
+			throw new EmpowerHerBizException(EmpowerHerBizError.INVALID_USERNAME);
+		}
+		
+		if(password == null || password.isEmpty()) {
+			throw new EmpowerHerBizException(EmpowerHerBizError.INVALID_PASSWORD);
+		}
+		
         Query query = new Query();
         query.addCriteria(Criteria.where("username").is(username));
         Customer customer =  mongoTemplate.findOne(query, Customer.class);
