@@ -20,7 +20,9 @@ com\fyp\ehb\controller\RawMaterialController.class
 com\fyp\ehb\enums\EmpowerHerBizError.class
 com\fyp\ehb\service\ExpenseService.class
 com\fyp\ehb\service\ExpenseServiceImpl.class
+com\fyp\ehb\controller\GlobalExceptionHandler.class
 com\fyp\ehb\model\AddExpenseRequest.class
+com\fyp\ehb\model\ExpenseResponse.class
 com\fyp\ehb\service\CustomerServiceImpl.class
 com\fyp\ehb\model\MainResponse.class
 com\fyp\ehb\service\CustomerService.class
@@ -30,6 +32,7 @@ com\fyp\ehb\service\RawMaterialService.class
 com\fyp\ehb\service\GoalServiceImpl.class
 com\fyp\ehb\service\RawMaterialServiceImpl.class
 com\fyp\ehb\util\EhbUtil.class
+com\fyp\ehb\model\EmpowerHerBizErrorResponse.class
 com\fyp\ehb\model\CustomerResponse.class
 com\fyp\ehb\model\CreateGoalRequest.class
 com\fyp\ehb\repository\BusinessDao.class
