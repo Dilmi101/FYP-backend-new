@@ -16,7 +16,10 @@ public enum EmpowerHerBizError {
 	EXPENSE_CREATION_FAILED("10", "Expense creation failed.", HttpStatus.BAD_REQUEST),
 	EXPENSE_NOT_FOUND("11", "No such record for this ID.", HttpStatus.BAD_REQUEST),
 	EXPENSE_UPDATE_FAILED("12", "Expense update failed.", HttpStatus.BAD_REQUEST),
-	EXPENSE_DELETE_FAILED("13", "Expense delete failed.", HttpStatus.BAD_REQUEST);
+	EXPENSE_DELETE_FAILED("13", "Expense delete failed.", HttpStatus.BAD_REQUEST),
+	RAW_MATERIAL_CREATION_FAILED("14", "Cannot add raw material.", HttpStatus.BAD_REQUEST),
+	RAW_MATERIAL_CANNOT_FOUND("15", "Raw material cannot be found.", HttpStatus.BAD_REQUEST),
+	RAW_MATERIAL_UPDATE_FAILED("16", "Cannot update raw material", HttpStatus.BAD_REQUEST);
 	
 	private String errorCode;
 	private String errorMessage;

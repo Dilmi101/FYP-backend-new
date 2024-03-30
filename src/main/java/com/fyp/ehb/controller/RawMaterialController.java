@@ -22,9 +22,10 @@ public class RawMaterialController {
 	private RawMaterialService rawMaterialService;
 	
 	@PostMapping(value="/{customerId}/add")
-	public MainResponse addRawMaterial(@RequestBody AddRawMaterialRequest addRawMaterialRequest) {
+	public MainResponse addRawMaterial(@PathVariable(value = "customerId") String customerId, 
+			@RequestBody AddRawMaterialRequest addRawMaterialRequest) {
 				
-		HashMap<String, String> hm = rawMaterialService.addRawMaterial(addRawMaterialRequest);
+		HashMap<String, String> hm = rawMaterialService.addRawMaterial(addRawMaterialRequest, customerId);
 		
 		MainResponse mainResponse = new MainResponse();
 		mainResponse.setResponseCode("000");

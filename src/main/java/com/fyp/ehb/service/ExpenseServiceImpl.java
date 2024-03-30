@@ -53,6 +53,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 			throw new EmpowerHerBizException(EmpowerHerBizError.CUSTOMER_NOT_FOUND);
 		}
 			    
+		Customer cust = customer.get();
+		
 	    String sDate = addExpenseRequest.getStartDate();  
 	    Date startDate = new Date();
 		try {
@@ -79,6 +81,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setExpenseTitle(addExpenseRequest.getExpenseTitle());
 		expense.setReminder(addExpenseRequest.getReminder());
 		expense.setStartDate(startDate);
+		expense.setCustomer(cust);
 		
 		expense = expenseDao.save(expense);
 		
