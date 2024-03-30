@@ -1,6 +1,7 @@
 name: on_commit
 
 on:
+  workflow_dispatch: # Manually trigger the workflow
   push:
     branches:
       - master
