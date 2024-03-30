@@ -1,7 +1,7 @@
 name: on_commit
 
 on:
-  commit:
+  push:
     branches:
       - master
 
