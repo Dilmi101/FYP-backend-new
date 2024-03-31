@@ -29,4 +29,5 @@ build/
 .vscode/
 
 ## build artifact ##
-target/*
+/target/
+*/target/**

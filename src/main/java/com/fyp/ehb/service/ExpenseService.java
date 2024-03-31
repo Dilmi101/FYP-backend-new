@@ -21,4 +21,6 @@ public interface ExpenseService {
 
 	public List<ExpenseResponse> searchExpenses(String status, String category, String fromDate, String toDate) throws Exception;
 
+	public HashMap<String, String> updateExpenseProgressById(String id, String amount) throws Exception;
+
 }

@@ -11,7 +11,6 @@ public class AddExpenseRequest {
 	private String startDate;
 	private String endDate;
 	private String amount;
-	private int duration;
 	private String reminder;
 	private String customerId;
 

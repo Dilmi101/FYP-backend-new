@@ -104,4 +104,18 @@ public class ExpenseController {
 
 		return mainResponse;
 	}
+	
+	@PutMapping(value="/{id}/updateProgress")
+	public MainResponse updateExpenseProgressById(
+			@PathVariable("id") String id,
+			@RequestParam(name = "amount") String amount) throws Exception {
+
+		HashMap<String, String> response = expenseService.updateExpenseProgressById(id, amount);
+
+		MainResponse mainResponse = new MainResponse();
+		mainResponse.setResponseCode("000");
+		mainResponse.setResponseObject(response);
+
+		return mainResponse;
+	}
 }

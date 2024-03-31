@@ -3,6 +3,7 @@ package com.fyp.ehb.service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,10 +20,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fyp.ehb.domain.Customer;
 import com.fyp.ehb.domain.Expense;
+import com.fyp.ehb.domain.ExpenseHistory;
 import com.fyp.ehb.domain.Goal;
+import com.fyp.ehb.domain.GoalHistory;
 import com.fyp.ehb.enums.EmpowerHerBizError;
 import com.fyp.ehb.enums.Status;
 import com.fyp.ehb.exception.EmpowerHerBizException;
@@ -31,6 +35,7 @@ import com.fyp.ehb.model.ExpenseResponse;
 import com.fyp.ehb.model.GoalResponse;
 import com.fyp.ehb.repository.CustomerDao;
 import com.fyp.ehb.repository.ExpenseDao;
+import com.fyp.ehb.repository.ExpenseHistoryDao;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -43,6 +48,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 	
     @Autowired
     private MongoTemplate mongoTemplate;
+    
+    @Autowired
+    private ExpenseHistoryDao expenseHistoryDao;
 
 	@Override
 	public HashMap<String, String> addExpense(String customerId, AddExpenseRequest addExpenseRequest) throws Exception {
@@ -58,7 +66,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	    String sDate = addExpenseRequest.getStartDate();  
 	    Date startDate = new Date();
 		try {
-			startDate = new SimpleDateFormat("yyyy-MM-dd").parse(sDate);
+			startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(sDate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -66,14 +74,13 @@ public class ExpenseServiceImpl implements ExpenseService {
 	    String eDate = addExpenseRequest.getEndDate();  
 	    Date endDate = new Date();
 		try {
-			endDate = new SimpleDateFormat("yyyy-MM-dd").parse(eDate);
+			endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(eDate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 	    
 		Expense expense = new Expense();
 		expense.setAmount(addExpenseRequest.getAmount());
-		expense.setDuration(addExpenseRequest.getDuration());
 		expense.setEndDate(endDate);
 		expense.setExpenseCategory(addExpenseRequest.getExpenseCategory());
 		expense.setExpenseDescription(addExpenseRequest.getExpenseDescription());
@@ -117,7 +124,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		    String sDate = addExpenseRequest.getStartDate();  
 		    Date startDate = new Date();
 			try {
-				startDate = new SimpleDateFormat("yyyy-MM-dd").parse(sDate);
+				startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(sDate);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -125,13 +132,12 @@ public class ExpenseServiceImpl implements ExpenseService {
 		    String eDate = addExpenseRequest.getEndDate();  
 		    Date endDate = new Date();
 			try {
-				endDate = new SimpleDateFormat("yyyy-MM-dd").parse(eDate);
+				endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(eDate);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			
 			existingEx.setAmount(addExpenseRequest.getAmount());
-			existingEx.setDuration(addExpenseRequest.getDuration());
 			existingEx.setEndDate(endDate);
 			existingEx.setExpenseCategory(addExpenseRequest.getExpenseCategory());
 			existingEx.setExpenseDescription(addExpenseRequest.getExpenseDescription());
@@ -204,7 +210,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         	
         	ExpenseResponse expense = new ExpenseResponse();
         	expense.setAmount(e.getAmount());
-        	expense.setCustomer(customer.get());
+        	expense.setCustomer(customer.get().getId());
         	expense.setDuration(e.getDuration());
         	expense.setEndDate(String.valueOf(e.getEndDate()));
         	expense.setExpenseCategory(e.getExpenseCategory());
@@ -214,9 +220,43 @@ public class ExpenseServiceImpl implements ExpenseService {
         	expense.setId(e.getId());
         	expense.setReminder(e.getReminder());
         	expense.setStartDate(String.valueOf(e.getStartDate()));
+        	        	
+        	Instant currentDate = Instant.now();
+        	Instant endD = e.getEndDate().toInstant();
+
+        	Duration duration = Duration.between(currentDate, endD);
+        	long days = duration.toDays();
         	
-        	expenseList.add(expense);            
+            if(days < 0){
+                continue;
+            }
             
+            expense.setRemainingDays(String.valueOf(days));
+            
+            List<ExpenseHistory> records = expenseHistoryDao.getExpenseHistoryById(e.getId());
+
+            double sum = 0.00;
+
+            if(!records.isEmpty()){
+                for(ExpenseHistory record : records){
+                    double achieved = Double.parseDouble(record.getAchievedAmount());
+                    sum += achieved;
+                }
+
+                double target = Double.parseDouble(e.getAmount());
+                double percentage = (sum / target) * 100;
+                double remaining = target - sum;
+
+                expense.setProgrssPercentage(String.valueOf(Math.round(percentage)));
+                expense.setPendingTarget(String.valueOf(remaining));
+            }
+            else{
+            	expense.setProgrssPercentage("0");
+            	expense.setPendingTarget(e.getAmount());
+            }
+            
+        	expenseList.add(expense);          
+
         }
         
 		return expenseList.stream()
@@ -246,7 +286,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		String eDate = dateFormat2.format(endDate);  
 		
 		response.setAmount(existingExpense.getAmount());
-		response.setCustomer(existingExpense.getCustomer());
+		response.setCustomer(existingExpense.getCustomer().getId());
 		response.setDuration(existingExpense.getDuration());
 		response.setEndDate(eDate);
 		response.setExpenseCategory(existingExpense.getExpenseCategory());
@@ -256,6 +296,40 @@ public class ExpenseServiceImpl implements ExpenseService {
 		response.setId(existingExpense.getId());
 		response.setReminder(existingExpense.getReminder());
 		response.setStartDate(strDate);
+		
+        List<ExpenseHistory> records = expenseHistoryDao.getExpenseHistoryById(existingExpense.getId());
+
+        double sum = 0.00;
+
+        if(!records.isEmpty()){
+            for(ExpenseHistory record : records){
+                double achieved = Double.parseDouble(record.getAchievedAmount());
+                sum += achieved;
+            }
+            
+        	Instant currentDate = Instant.now();
+        	Instant endD = existingExpense.getEndDate().toInstant();
+
+        	Duration duration = Duration.between(currentDate, endD);
+        	long days = duration.toDays();
+            
+            response.setRemainingDays(String.valueOf(days));
+            
+            if(days < 0){
+            	response.setRemainingDays(String.valueOf(0));
+            }
+
+            double target = Double.parseDouble(existingExpense.getAmount());
+            double remaining = target - sum;
+            double percentage = (sum / target) * 100;
+
+            response.setProgrssPercentage(String.valueOf(Math.round(percentage)));
+            response.setPendingTarget(String.valueOf(remaining));
+        }
+        else{
+        	response.setPendingTarget(existingExpense.getAmount());
+        	response.setProgrssPercentage("0");
+        }
 				
 		return response;
 	}
@@ -314,7 +388,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         		String ed = dateFormat2.format(endD);  
         		
         		expenseResponse.setAmount(e.getAmount());
-        		expenseResponse.setCustomer(e.getCustomer());
+        		expenseResponse.setCustomer(e.getCustomer().getId());
         		expenseResponse.setDuration(e.getDuration());
         		expenseResponse.setEndDate(ed);
         		expenseResponse.setExpenseCategory(e.getExpenseCategory());
@@ -325,6 +399,40 @@ public class ExpenseServiceImpl implements ExpenseService {
         		expenseResponse.setReminder(e.getReminder());
         		expenseResponse.setStartDate(strDate);
         		
+            	Instant currentDate = Instant.now();
+            	Instant endDt = e.getEndDate().toInstant();
+
+            	Duration duration = Duration.between(currentDate, endDt);
+            	long days = duration.toDays();
+            	
+                if(days < 0){
+                    continue;
+                }
+                
+                expenseResponse.setRemainingDays(String.valueOf(days));
+                
+                List<ExpenseHistory> records = expenseHistoryDao.getExpenseHistoryById(e.getId());
+
+                double sum = 0.00;
+
+                if(!records.isEmpty()){
+                    for(ExpenseHistory record : records){
+                        double achieved = Double.parseDouble(record.getAchievedAmount());
+                        sum += achieved;
+                    }
+
+                    double target = Double.parseDouble(e.getAmount());
+                    double percentage = (sum / target) * 100;
+                    double remaining = target - sum;
+
+                    expenseResponse.setProgrssPercentage(String.valueOf(Math.round(percentage)));
+                    expenseResponse.setPendingTarget(String.valueOf(remaining));
+                }
+                else{
+                	expenseResponse.setProgrssPercentage("0");
+                	expenseResponse.setPendingTarget(e.getAmount());
+                }
+        		
         		exList.add(expenseResponse);
         	}
         } else {
@@ -332,6 +440,41 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
         
 		return exList;
+	}
+
+	@Override
+	@Transactional
+	public HashMap<String, String> updateExpenseProgressById(String id, String amount) throws Exception {
+
+		Optional<Expense> expense = expenseDao.findById(id);
+		
+		if(expense.isPresent()) {
+			if(Double.parseDouble(amount) > 0) {
+				ExpenseHistory record = new ExpenseHistory();
+				record.setExpense(expense.get());
+				record.setAchievedAmount(amount);
+				record.setCreatedDate(new Date());
+				
+				record = expenseHistoryDao.save(record);
+				
+                HashMap<String, String> hm = new HashMap<>();
+
+                if(record != null){
+                	hm.put("code", "000");
+                    hm.put("message", "Your expense has been successfully recorded.");
+                }
+                else{
+                	hm.put("code", "999");
+                    hm.put("message", "Failed");
+                }
+                return hm;
+			} else{
+                throw new EmpowerHerBizException(EmpowerHerBizError.INVALID_AMOUNT);
+            }
+		} else{
+            throw new EmpowerHerBizException(EmpowerHerBizError.EXPENSE_NOT_FOUND);
+        }
+
 	}
 
 }

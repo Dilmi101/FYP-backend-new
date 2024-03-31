@@ -1,7 +1,11 @@
 package com.fyp.ehb.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fyp.ehb.domain.Customer;
+import com.fyp.ehb.domain.ExpenseHistory;
+import com.fyp.ehb.domain.GoalHistory;
 
 import lombok.Data;
 
@@ -19,6 +23,8 @@ public class ExpenseResponse {
 	private String endDate;
 	private String reminder;
 	private String expenseStatus;
-	private Customer customer;
+	private String customer;
 	private String remainingDays;
+	private String progrssPercentage;
+    private String pendingTarget;
 }
