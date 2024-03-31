@@ -48,7 +48,7 @@ public class GoalController {
 		return response;
 	}
 
-	@PutMapping("/delete/{id}")
+	@DeleteMapping("/delete/{id}")
 	public MainResponse deleteGoal(
 			@PathVariable(value = "id") String goalId
 	) throws Exception {
@@ -88,7 +88,7 @@ public class GoalController {
 		return mainResponse;
 	}
 
-	@PutMapping(value="/{id}/updateProgress")
+	@PostMapping(value="/{id}/updateProgress")
 	public MainResponse updateGoalProgressById(
 			@PathVariable("id") String id,
 			@RequestParam(name = "amount") String amount
@@ -103,15 +103,16 @@ public class GoalController {
 		return mainResponse;
 	}
 
-	@GetMapping(value="/search")
+	@GetMapping(value="/{customerId}/search")
 	public MainResponse findGoals(
+			@PathVariable("customerId") String customerId,
 			@RequestParam(name = "status", required = false) String status,
 			@RequestParam(name = "priority", required = false) String priority,
 			@RequestParam(name = "fromDate", required = false) String fromDate,
 			@RequestParam(name = "toDate", required = false) String toDate
 	) throws Exception {
 
-		List<GoalResponse> goals = goalService.findGoals(status, priority, fromDate, toDate);
+		List<GoalResponse> goals = goalService.findGoals(customerId, status, priority, fromDate, toDate);
 
 		MainResponse mainResponse = new MainResponse();
 		mainResponse.setResponseCode("000");

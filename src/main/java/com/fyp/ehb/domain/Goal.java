@@ -24,10 +24,10 @@ public class Goal {
     private String goalDescription;
 
     @Field("start_date")
-    private LocalDateTime startDate;
+    private String startDate;
 
     @Field("end_date")
-    private LocalDateTime endDate;
+    private String endDate;
 
     private String unit;
     private String target;

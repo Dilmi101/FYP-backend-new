@@ -18,8 +18,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,8 +46,8 @@ public class GoalServiceImpl implements GoalService {
 
         goal.setGoalTitle(goalRequest.getGoalTitle());
         goal.setGoalDescription(goalRequest.getGoalDescription());
-        goal.setStartDate(LocalDateTime.parse(goalRequest.getStartDate()));
-        goal.setEndDate(LocalDateTime.parse(goalRequest.getEndDate()));
+        goal.setStartDate(goalRequest.getStartDate());
+        goal.setEndDate(goalRequest.getEndDate());
         goal.setUnit(goalRequest.getUnit());
         goal.setTarget(goalRequest.getTarget());
         goal.setPriority(goal.getPriority());
@@ -75,8 +76,8 @@ public class GoalServiceImpl implements GoalService {
             goalResponse.setId(goalNew.getId());
             goalResponse.setGoalTitle(goalNew.getGoalTitle());
             goalResponse.setGoalDescription(goalNew.getGoalDescription());
-            goalResponse.setStartDate(String.valueOf(goalNew.getStartDate()));
-            goalResponse.setEndDate(String.valueOf(goalNew.getEndDate()));
+            goalResponse.setStartDate(goalNew.getStartDate());
+            goalResponse.setEndDate(goalNew.getEndDate());
             goalResponse.setUnit(goalNew.getUnit());
             goalResponse.setTarget(goalNew.getTarget());
             goalResponse.setPriority(goalNew.getPriority());
@@ -101,11 +102,11 @@ public class GoalServiceImpl implements GoalService {
 
             Goal goalCurrent = goal.get();
 
-            goalCurrent.setId(goalId);
+             goalCurrent.setId(goalId);
             goalCurrent.setGoalTitle(goalRequest.getGoalTitle());
             goalCurrent.setGoalDescription(goalRequest.getGoalDescription());
-            goalCurrent.setStartDate(LocalDateTime.parse(goalRequest.getStartDate()));
-            goalCurrent.setEndDate(LocalDateTime.parse(goalRequest.getEndDate()));
+            goalCurrent.setStartDate(goalRequest.getStartDate());
+            goalCurrent.setEndDate(goalRequest.getEndDate());
             goalCurrent.setUnit(goalRequest.getUnit());
             goalCurrent.setTarget(goalRequest.getTarget());
             goalCurrent.setPriority(goalRequest.getPriority());
@@ -122,8 +123,8 @@ public class GoalServiceImpl implements GoalService {
                 goalResponse.setId(updatedGoal.getId());
                 goalResponse.setGoalTitle(updatedGoal.getGoalTitle());
                 goalResponse.setGoalDescription(updatedGoal.getGoalDescription());
-                goalResponse.setStartDate(String.valueOf(updatedGoal.getStartDate()));
-                goalResponse.setEndDate(String.valueOf(updatedGoal.getEndDate()));
+                goalResponse.setStartDate(updatedGoal.getStartDate());
+                goalResponse.setEndDate(updatedGoal.getEndDate());
                 goalResponse.setUnit(updatedGoal.getUnit());
                 goalResponse.setTarget(updatedGoal.getTarget());
                 goalResponse.setPriority(updatedGoal.getPriority());
@@ -178,7 +179,7 @@ public class GoalServiceImpl implements GoalService {
 
         List<Goal> goals = new ArrayList<>();
 
-        goals.addAll(goalDao.findAll());
+        goals.addAll(goalDao.getGoalsByCustomerId(customerId));
 
         if(!goals.isEmpty()){
 
@@ -190,8 +191,8 @@ public class GoalServiceImpl implements GoalService {
                 goalResponse.setId(goal.getId());
                 goalResponse.setGoalTitle(goal.getGoalTitle());
                 goalResponse.setGoalDescription(goal.getGoalDescription());
-                goalResponse.setStartDate(String.valueOf(goal.getStartDate()));
-                goalResponse.setEndDate(String.valueOf(goal.getEndDate()));
+                goalResponse.setStartDate(goal.getStartDate());
+                goalResponse.setEndDate(goal.getEndDate());
                 goalResponse.setUnit(goal.getUnit());
                 goalResponse.setTarget(goal.getTarget());
                 goalResponse.setPriority(goal.getPriority());
@@ -199,15 +200,27 @@ public class GoalServiceImpl implements GoalService {
                 goalResponse.setGoalStatus(goal.getGoalStatus());
                 goalResponse.setIsRecurringGoal(goal.getIsRecurringGoal());
 
-                LocalDateTime current = LocalDateTime.now();
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                Duration duration = Duration.between(current, goal.getEndDate());
+                long days = 0;
 
-                long days = duration.toDays();
+                try {
+                    Date goalEndDate = format.parse(goal.getEndDate());
 
-                if(days < 0){
-                    continue;
+                    Instant currentDate = Instant.now();
+                    Instant endDate = goalEndDate.toInstant();
+
+                    Duration duration = Duration.between(currentDate, endDate);
+                    days = duration.toDays();
+
+                    if (days < 0) {
+                        continue;
+                    }
                 }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 goalResponse.setRemainingDays(String.valueOf(days));
 
                 List<GoalHistory> records = goalHistoryDao.getGoalHistoriesByGoalId(goal.getId());
@@ -259,8 +272,8 @@ public class GoalServiceImpl implements GoalService {
             goalResponse.setId(goal.getId());
             goalResponse.setGoalTitle(goal.getGoalTitle());
             goalResponse.setGoalDescription(goal.getGoalDescription());
-            goalResponse.setStartDate(String.valueOf(goal.getStartDate()));
-            goalResponse.setEndDate(String.valueOf(goal.getEndDate()));
+            goalResponse.setStartDate(goal.getStartDate());
+            goalResponse.setEndDate(goal.getEndDate());
             goalResponse.setUnit(goal.getUnit());
             goalResponse.setTarget(String.valueOf(goal.getTarget()));
             goalResponse.setPriority(goal.getPriority());
@@ -306,7 +319,20 @@ public class GoalServiceImpl implements GoalService {
 
                 record.setGoal(goal.get());
                 record.setAchievedAmount(amount);
-                record.setCreatedDate(LocalDateTime.now());
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                Date currentDate = new Date();
+                String dateStr = "";
+
+                try {
+                    dateStr = sdf.format(currentDate);
+                }
+                catch (Exception e){
+                   e.printStackTrace();
+                }
+
+                record.setCreatedDate(dateStr);
 
                 GoalHistory history = goalHistoryDao.save(record);
 
@@ -330,9 +356,11 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public List<GoalResponse> findGoals(String status, String priority, String fromDate, String toDate) throws Exception {
+    public List<GoalResponse> findGoals(String customerId, String status, String priority, String fromDate, String toDate) throws Exception {
 
         Query query = new Query();
+
+        query.addCriteria(Criteria.where("customer.id").is(customerId));
 
         if(status != null && !status.isEmpty()) {
             query.addCriteria(Criteria.where("goalStatus").is(status));
@@ -341,10 +369,10 @@ public class GoalServiceImpl implements GoalService {
             query.addCriteria(Criteria.where("priority").is(priority));
         }
         if(fromDate != null && !fromDate.isEmpty()) {
-            query.addCriteria(Criteria.where("startDate").gte(LocalDateTime.parse(fromDate)));
+            query.addCriteria(Criteria.where("startDate").gte(fromDate));
         }
         if(toDate != null && !toDate.isEmpty()) {
-            query.addCriteria(Criteria.where("endDate").lte(LocalDateTime.parse(toDate)));
+            query.addCriteria(Criteria.where("endDate").lte(toDate));
         }
 
         List<Goal> goals =  mongoTemplate.find(query, Goal.class);
@@ -368,15 +396,27 @@ public class GoalServiceImpl implements GoalService {
                 goalResponse.setGoalStatus(goal.getGoalStatus());
                 goalResponse.setIsRecurringGoal(goal.getIsRecurringGoal());
 
-                LocalDateTime current = LocalDateTime.now();
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                Duration duration = Duration.between(current, goal.getEndDate());
+                long days = 0;
 
-                long days = duration.toDays();
+                try {
+                    Date goalEndDate = format.parse(goal.getEndDate());
 
-                if(days < 0){
-                    continue;
+                    Instant currentDate = Instant.now();
+                    Instant endDate = goalEndDate.toInstant();
+
+                    Duration duration = Duration.between(currentDate, endDate);
+                    days = duration.toDays();
+
+                    if (days < 0) {
+                        continue;
+                    }
                 }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 goalResponse.setRemainingDays(String.valueOf(days));
 
                 List<GoalHistory> records = goalHistoryDao.getGoalHistoriesByGoalId(goal.getId());
