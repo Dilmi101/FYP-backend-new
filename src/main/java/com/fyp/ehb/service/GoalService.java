@@ -20,5 +20,5 @@ public interface GoalService {
 
     HashMap<String, String> updateGoalProgress(String id, String amount) throws Exception;
 
-    List<GoalResponse> findGoals(String status, String priority, String fromDate, String toDate) throws  Exception;
+    List<GoalResponse> findGoals(String customerId, String status, String priority, String fromDate, String toDate) throws  Exception;
 }

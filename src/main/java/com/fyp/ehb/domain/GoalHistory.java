@@ -21,7 +21,7 @@ public class GoalHistory {
     private String achievedAmount;
 
     @Field("created_date")
-    private LocalDateTime createdDate;
+    private String createdDate;
 
     @DBRef
     private Goal goal;
