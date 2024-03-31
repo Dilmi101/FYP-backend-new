@@ -21,6 +21,9 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
+      - name: Check current directory
+        run: pwd
+
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
@@ -36,5 +39,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
+          context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fyp_backend_new:latest
