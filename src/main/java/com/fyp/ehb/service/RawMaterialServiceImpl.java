@@ -1,16 +1,24 @@
 package com.fyp.ehb.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.fyp.ehb.domain.Customer;
+import com.fyp.ehb.domain.Expense;
 import com.fyp.ehb.domain.RawMaterial;
 import com.fyp.ehb.enums.EmpowerHerBizError;
 import com.fyp.ehb.exception.EmpowerHerBizException;
 import com.fyp.ehb.model.AddRawMaterialRequest;
+import com.fyp.ehb.model.ExpenseResponse;
+import com.fyp.ehb.model.RawMaterialResponse;
 import com.fyp.ehb.repository.CustomerDao;
 import com.fyp.ehb.repository.RwMaterialDao;
 
@@ -22,6 +30,9 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 	
 	@Autowired
 	private RwMaterialDao rawMaterialDao;
+	
+    @Autowired
+    private MongoTemplate mongoTemplate;
 	
 	@Override
 	public HashMap<String, String> addRawMaterial(AddRawMaterialRequest addRawMaterialRequest, String customerId)
@@ -115,6 +126,40 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 			
 			return hm;
 		}
+	}
+
+	@Override
+	public List<RawMaterialResponse> getRawMaterials(String customerId) throws EmpowerHerBizException {
+
+		Optional<Customer> customer = customerDao.findById(customerId);
+		
+		if(!customer.isPresent()) {
+			return new ArrayList<>();
+		}
+		
+        Query query = new Query();
+        query.addCriteria(Criteria.where("customer").is(customer.get()));
+        List<RawMaterial> rawMaterials=  mongoTemplate.find(query, RawMaterial.class);
+        
+        List<RawMaterialResponse> rawMaterialList = new ArrayList<>();
+        
+        for(RawMaterial r : rawMaterials) {
+        	
+        	RawMaterialResponse response = new RawMaterialResponse();
+        	response.setAvailability(r.getAvailability());
+        	response.setLowStockLvl(r.getLowStockLvl());
+        	response.setName(r.getName());
+        	response.setRemainingStock(r.getRemainingStock());
+        	response.setReminder(r.getReminder());
+        	response.setStatus(r.getStatus());
+        	response.setSupplierEmail(r.getSupplierEmail());
+        	response.setSupplierName(r.getSupplierName());
+        	response.setUnit(r.getUnit());
+        	response.setCustomerId(customerId);        	
+        	
+        }
+    	return null;
+
 	}
 
 }
