@@ -12,4 +12,5 @@ public class DashboardCustomResponse {
 	private String title;
 	private String amount;
 	private String percentage;
+	private String dashBrdId;
 }

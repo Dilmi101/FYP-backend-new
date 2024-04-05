@@ -93,6 +93,7 @@ public class DashboardServiceImpl implements DashboardService {
         for(Dashboard d : dashboardList) {
         	
         	DashboardCustomResponse response = new DashboardCustomResponse();
+        	response.setDashBrdId(d.getId());
         	
         	if(d.getType().equalsIgnoreCase("EXPENSE")) {
         		
