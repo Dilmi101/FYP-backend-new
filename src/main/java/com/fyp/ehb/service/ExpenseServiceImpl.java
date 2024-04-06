@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import com.fyp.ehb.enums.EmpowerHerBizError;
 import com.fyp.ehb.enums.Status;
 import com.fyp.ehb.exception.EmpowerHerBizException;
 import com.fyp.ehb.model.AddExpenseRequest;
+import com.fyp.ehb.model.ExpenseHistoryMain;
 import com.fyp.ehb.model.ExpenseResponse;
 import com.fyp.ehb.model.GoalResponse;
 import com.fyp.ehb.repository.CustomerDao;
@@ -299,12 +301,26 @@ public class ExpenseServiceImpl implements ExpenseService {
 		
         List<ExpenseHistory> records = expenseHistoryDao.getExpenseHistoryById(existingExpense.getId());
 
+        List<ExpenseHistoryMain> exArr = new ArrayList<>();
+        
         double sum = 0.00;
 
         if(!records.isEmpty()){
+
             for(ExpenseHistory record : records){
                 double achieved = Double.parseDouble(record.getAchievedAmount());
                 sum += achieved;
+                
+        		Date expCreatedD = record.getCreatedDate();  
+        		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-mm-dd");  
+        		String exD = dtFormat.format(expCreatedD); 
+        		
+                ExpenseHistoryMain exmainRes = new ExpenseHistoryMain();
+                exmainRes.setAmount(record.getAchievedAmount());
+                exmainRes.setExpenseHistIds(record.getId());
+                exmainRes.setCreatedDate(exD);
+                
+                exArr.add(exmainRes);
             }
             
         	Instant currentDate = Instant.now();
@@ -312,7 +328,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         	Duration duration = Duration.between(currentDate, endD);
         	long days = duration.toDays();
-            
+        	
+            response.setHistoryRecords(exArr);
             response.setRemainingDays(String.valueOf(days));
             
             if(days < 0){

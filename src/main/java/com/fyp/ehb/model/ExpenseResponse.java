@@ -27,4 +27,5 @@ public class ExpenseResponse {
 	private String remainingDays;
 	private String progrssPercentage;
     private String pendingTarget;
+    private List<ExpenseHistoryMain> historyRecords;
 }

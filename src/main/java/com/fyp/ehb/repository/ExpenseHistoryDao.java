@@ -9,7 +9,7 @@ import com.fyp.ehb.domain.ExpenseHistory;
 
 public interface ExpenseHistoryDao extends MongoRepository<ExpenseHistory, String> {
 
-	@Query("{expense : ?0}")
+	@Query(value ="{expense : ?0}")
 	List<ExpenseHistory> getExpenseHistoryById(String expense);
 
 }
