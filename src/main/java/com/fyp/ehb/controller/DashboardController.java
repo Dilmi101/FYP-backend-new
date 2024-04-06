@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +40,18 @@ public class DashboardController {
 	public MainResponse getDashboardItems(@PathVariable(value = "customerId") String customerId) throws Exception {
 		
 		List<DashboardCustomResponse> hm = dashboardService.getDashboardItems(customerId);
+		
+		MainResponse mainResponse = new MainResponse();
+		mainResponse.setResponseCode("000");
+		mainResponse.setResponseObject(hm);
+		
+		return mainResponse;
+	}
+	
+	@PutMapping(value="/{id}")
+	public MainResponse deleteDashboardItem(@PathVariable(value = "id") String id) throws Exception {
+		
+		HashMap<String, String> hm = dashboardService.deleteDashboardItem(id);
 		
 		MainResponse mainResponse = new MainResponse();
 		mainResponse.setResponseCode("000");

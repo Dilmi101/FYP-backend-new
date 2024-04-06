@@ -56,6 +56,7 @@ public class DashboardServiceImpl implements DashboardService {
 			Dashboard dash = new Dashboard();
 			dash.setCustomer(customer.get());
 			dash.setType(d.getType());
+			dash.setStatus("A");
 			
 			if(d.getType().equalsIgnoreCase("RAW")) {
 				dash.setRawMaterialId(d.getRawMatId());
@@ -123,6 +124,24 @@ public class DashboardServiceImpl implements DashboardService {
         	dash.add(response);
         }
 		return dash;
+	}
+
+	@Override
+	public HashMap<String, String> deleteDashboardItem(String id) throws Exception {
+		
+		Optional<Dashboard> existingDash = dashboardDao.findById(id);
+		Dashboard dash = existingDash.get();
+		
+		HashMap<String, String> hm = new HashMap<>();
+		
+		dash.setStatus("D");
+		dash = dashboardDao.save(dash);
+		
+		if(dash != null) {
+			hm.put("code", "000");
+			hm.put("message", "Item deleted successfully.");
+		}
+		return hm;
 	}
 
 }

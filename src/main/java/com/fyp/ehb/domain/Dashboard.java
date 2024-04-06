@@ -26,4 +26,6 @@ public class Dashboard {
 	
 	private String rawMaterialId;
 	
+	private String status;
+	
 }

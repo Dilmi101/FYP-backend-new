@@ -12,4 +12,6 @@ public interface DashboardService {
 
 	public List<DashboardCustomResponse> getDashboardItems(String customerId) throws Exception;
 
+	public HashMap<String, String> deleteDashboardItem(String id) throws Exception;
+
 }
