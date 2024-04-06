@@ -1,5 +1,7 @@
 package com.fyp.ehb.service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,12 +16,14 @@ import org.springframework.stereotype.Service;
 import com.fyp.ehb.domain.Customer;
 import com.fyp.ehb.domain.Expense;
 import com.fyp.ehb.domain.RawMaterial;
+import com.fyp.ehb.domain.RawMaterialHistory;
 import com.fyp.ehb.enums.EmpowerHerBizError;
 import com.fyp.ehb.exception.EmpowerHerBizException;
 import com.fyp.ehb.model.AddRawMaterialRequest;
 import com.fyp.ehb.model.ExpenseResponse;
 import com.fyp.ehb.model.RawMaterialResponse;
 import com.fyp.ehb.repository.CustomerDao;
+import com.fyp.ehb.repository.RawMaterialHistoryDao;
 import com.fyp.ehb.repository.RwMaterialDao;
 
 @Service
@@ -33,6 +37,9 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 	
     @Autowired
     private MongoTemplate mongoTemplate;
+    
+    @Autowired
+    private RawMaterialHistoryDao rawMaterialHistoryDao;
 	
 	@Override
 	public HashMap<String, String> addRawMaterial(AddRawMaterialRequest addRawMaterialRequest, String customerId)
@@ -155,7 +162,9 @@ public class RawMaterialServiceImpl implements RawMaterialService {
         	response.setSupplierEmail(r.getSupplierEmail());
         	response.setSupplierName(r.getSupplierName());
         	response.setUnit(r.getUnit());
-        	response.setCustomerId(customerId);        	
+        	response.setCustomerId(customerId);
+        	
+  //      	List<RawMaterialHistory> rawHistory = rawMaterialHistoryDao.getRawMaterialsById(r.getId());
         	
         }
     	return null;

@@ -114,11 +114,11 @@ public class DashboardServiceImpl implements DashboardService {
         		
         	} else if(d.getType().equalsIgnoreCase("RAW")) {
         		
-        		GoalResponse gRes = goalService.getGoalById(d.getGoalId());
-        		response.setAmount(gRes.getTarget());
-        		response.setPercentage(gRes.getProgressPercentage());
-        		response.setTitle(gRes.getGoalTitle());
-        		response.setType("RAW");
+//        		GoalResponse gRes = goalService.getGoalById(d.getGoalId());
+//        		response.setAmount(gRes.getTarget());
+//        		response.setPercentage(gRes.getProgressPercentage());
+//        		response.setTitle(gRes.getGoalTitle());
+//        		response.setType("RAW");
         	}
         	
         	dash.add(response);
