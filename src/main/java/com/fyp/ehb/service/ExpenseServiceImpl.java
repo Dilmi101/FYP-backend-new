@@ -1,5 +1,7 @@
 package com.fyp.ehb.service;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -237,19 +239,20 @@ public class ExpenseServiceImpl implements ExpenseService {
             
             List<ExpenseHistory> records = expenseHistoryDao.getExpenseHistoryById(e.getId());
 
-            double sum = 0.00;
+            BigDecimal sum = new BigDecimal("0.00");
 
             if(!records.isEmpty()){
                 for(ExpenseHistory record : records){
-                    double achieved = Double.parseDouble(record.getAchievedAmount());
-                    sum += achieved;
+                    BigDecimal achieved = new BigDecimal(record.getAchievedAmount());
+                    sum = sum.add(achieved);
                 }
+                
+                MathContext mc = new MathContext(3);
+                BigDecimal target = new BigDecimal(e.getAmount());
+                BigDecimal remaining = target.subtract(sum);//target - sum;
+                BigDecimal percentage = sum.divide(target).multiply(new BigDecimal(100)).round(mc);
 
-                double target = Double.parseDouble(e.getAmount());
-                double percentage = (sum / target) * 100;
-                double remaining = target - sum;
-
-                expense.setProgrssPercentage(String.valueOf(Math.round(percentage)));
+                expense.setProgrssPercentage(percentage.toString());
                 expense.setPendingTarget(String.valueOf(remaining));
             }
             else{
@@ -303,13 +306,13 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         List<ExpenseHistoryMain> exArr = new ArrayList<>();
         
-        double sum = 0.00;
+        BigDecimal sum = new BigDecimal("0.00");
 
         if(!records.isEmpty()){
 
             for(ExpenseHistory record : records){
-                double achieved = Double.parseDouble(record.getAchievedAmount());
-                sum += achieved;
+                BigDecimal achieved = new BigDecimal(record.getAchievedAmount());
+                sum = sum.add(achieved);
                 
         		Date expCreatedD = record.getCreatedDate();  
         		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-mm-dd");  
@@ -336,11 +339,12 @@ public class ExpenseServiceImpl implements ExpenseService {
             	response.setRemainingDays(String.valueOf(0));
             }
 
-            double target = Double.parseDouble(existingExpense.getAmount());
-            double remaining = target - sum;
-            double percentage = (sum / target) * 100;
+            MathContext mc = new MathContext(3);
+            BigDecimal target = new BigDecimal(existingExpense.getAmount());
+            BigDecimal remaining = target.subtract(sum);//target - sum;
+            BigDecimal percentage = sum.divide(target).multiply(new BigDecimal(100)).round(mc);
 
-            response.setProgrssPercentage(String.valueOf(Math.round(percentage)));
+            response.setProgrssPercentage(percentage.toString());
             response.setPendingTarget(String.valueOf(remaining));
         }
         else{
@@ -430,19 +434,20 @@ public class ExpenseServiceImpl implements ExpenseService {
                 
                 List<ExpenseHistory> records = expenseHistoryDao.getExpenseHistoryById(e.getId());
 
-                double sum = 0.00;
+                BigDecimal sum = new BigDecimal("0.00");
 
                 if(!records.isEmpty()){
                     for(ExpenseHistory record : records){
-                        double achieved = Double.parseDouble(record.getAchievedAmount());
-                        sum += achieved;
+                        BigDecimal achieved = new BigDecimal(record.getAchievedAmount());
+                        sum = sum.add(achieved);
                     }
+                    
+                    MathContext mc = new MathContext(3);
+                    BigDecimal target = new BigDecimal(e.getAmount());
+                    BigDecimal remaining = target.subtract(sum);//target - sum;
+                    BigDecimal percentage = sum.divide(target).multiply(new BigDecimal(100)).round(mc);
 
-                    double target = Double.parseDouble(e.getAmount());
-                    double percentage = (sum / target) * 100;
-                    double remaining = target - sum;
-
-                    expenseResponse.setProgrssPercentage(String.valueOf(Math.round(percentage)));
+                    expenseResponse.setProgrssPercentage(percentage.toString());
                     expenseResponse.setPendingTarget(String.valueOf(remaining));
                 }
                 else{
