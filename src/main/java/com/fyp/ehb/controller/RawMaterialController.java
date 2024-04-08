@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fyp.ehb.model.AddRawMaterialRequest;
@@ -72,6 +73,21 @@ public class RawMaterialController {
 		MainResponse mainResponse = new MainResponse();
 		mainResponse.setResponseCode("000");
 		mainResponse.setResponseObject(goals);
+
+		return mainResponse;
+	}
+	
+	@PutMapping(value="/{id}/updateProgress")
+	public MainResponse updateProgressById(
+			@PathVariable("id") String id,
+			@RequestParam(name = "count") int count,
+			@RequestParam(name = "action") String action) throws Exception {
+
+		HashMap<String, String> response = rawMaterialService.updateProgressById(id, count, action);
+
+		MainResponse mainResponse = new MainResponse();
+		mainResponse.setResponseCode("000");
+		mainResponse.setResponseObject(response);
 
 		return mainResponse;
 	}

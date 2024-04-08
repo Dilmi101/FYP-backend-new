@@ -21,6 +21,7 @@ public class RawMaterial {
     private String supplierName;
     private String supplierEmail;
     private String status;
+    private String action;
 
     @DBRef
     private Customer customer;

@@ -17,4 +17,6 @@ public interface RawMaterialService {
 
 	public List<RawMaterialResponse> getRawMaterials(String customerId) throws EmpowerHerBizException;
 
+	public HashMap<String, String> updateProgressById(String id, int unit, String action) throws Exception;
+
 }

@@ -1,5 +1,7 @@
 package com.fyp.ehb.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
@@ -9,13 +11,8 @@ import lombok.Data;
 public class RawMaterialResponse {
 
 	private String name;
-	private String unit;
 	private String remainingStock;
-	private String lowStockLvl;
-	private String reminder;
 	private String availability;
-	private String supplierName;
-	private String supplierEmail;
-	private String status;
-	private String customerId;
+	private String rawMateId;
+	private List<RawMaterialHistoryMain> rawHistoryList;
 }

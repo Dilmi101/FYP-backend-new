@@ -152,23 +152,52 @@ public class RawMaterialServiceImpl implements RawMaterialService {
         
         for(RawMaterial r : rawMaterials) {
         	
+        	String availability = "N";
+        	
+        	if(Integer.parseInt(r.getRemainingStock()) > 0) {
+        		availability = "Y";
+        	}
+        	
         	RawMaterialResponse response = new RawMaterialResponse();
-        	response.setAvailability(r.getAvailability());
-        	response.setLowStockLvl(r.getLowStockLvl());
+        	response.setAvailability(availability);
         	response.setName(r.getName());
         	response.setRemainingStock(r.getRemainingStock());
-        	response.setReminder(r.getReminder());
-        	response.setStatus(r.getStatus());
-        	response.setSupplierEmail(r.getSupplierEmail());
-        	response.setSupplierName(r.getSupplierName());
-        	response.setUnit(r.getUnit());
-        	response.setCustomerId(customerId);
+        	response.setRawMateId(r.getId());
         	
-  //      	List<RawMaterialHistory> rawHistory = rawMaterialHistoryDao.getRawMaterialsById(r.getId());
+        	List<RawMaterialHistory> rawHistory = rawMaterialHistoryDao.getRawMaterialsById(r.getId());
         	
         }
     	return null;
 
+	}
+
+	@Override
+	public HashMap<String, String> updateProgressById(String id, int unit, String action) throws Exception {
+		
+		HashMap<String, String> hm = new HashMap<>();
+		Optional<RawMaterial> rawMaterial = rawMaterialDao.findById(id);
+		
+		if(rawMaterial.isPresent()) {
+			
+			RawMaterialHistory record = new RawMaterialHistory();
+			record.setAction(action);
+			record.setCount(unit);
+			record.setRawMaterial(rawMaterial.get());
+			record = rawMaterialHistoryDao.save(record);
+			
+			if(record != null){
+            	hm.put("code", "000");
+                hm.put("message", "Raw material has been updated.");
+            }
+            else{
+            	hm.put("code", "999");
+                hm.put("message", "Failed");
+            }
+			
+		} else {
+			throw new EmpowerHerBizException(EmpowerHerBizError.RAW_MATERIAL_CANNOT_FOUND);
+		}
+		return hm;
 	}
 
 }

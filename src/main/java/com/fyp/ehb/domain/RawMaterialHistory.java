@@ -1,5 +1,7 @@
 package com.fyp.ehb.domain;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,9 +17,11 @@ public class RawMaterialHistory {
 	@Id
 	private String id;
 	
-	private String status;
+	private String action;
 	
-	private String count;
+	private int count;
+	
+	private Date createdDate;
 	
 	@DBRef
 	private RawMaterial rawMaterial;
