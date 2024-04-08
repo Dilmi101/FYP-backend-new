@@ -46,4 +46,17 @@ public class CustomerController {
 		return mainResponse;
 
 	}
+
+	@PutMapping(value="/{customerId}/updateProfile")
+	public MainResponse updateProfile(@PathVariable(value = "customerId") String customerId,
+									   @RequestBody CustomerResponse customerResponse) {
+
+		Customer customer = customerService.updateCustomerProfile(customerId,customerResponse);
+
+		MainResponse mainResponse = new MainResponse();
+		mainResponse.setResponseCode("000");
+		mainResponse.setResponseObject(customer);
+
+		return mainResponse;
+	}
 }

@@ -103,4 +103,24 @@ public class CustomerServiceImpl implements CustomerService {
 		
 	}
 
+    @Override
+    public Customer updateCustomerProfile(String customerId, CustomerResponse customerResponse) throws EmpowerHerBizException {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("username").is(customerId));
+        Customer customer = mongoTemplate.findOne(query, Customer.class);
+
+        if (customer == null) {
+            throw new EmpowerHerBizException(EmpowerHerBizError.INVALID_USERNAME);
+        } else {
+            Customer customerData = new Customer();
+
+            customerData.setEmail(customerResponse.getEmail());
+            customerData.setId(customerResponse.getId());
+            customerData.setName(customerResponse.getName());
+            customerData.setNic(customerResponse.getNic());
+            customerData.setUsername(customerResponse.getUsername());
+
+            return customerDao.save(customerData);
+        }
+    }
 }
