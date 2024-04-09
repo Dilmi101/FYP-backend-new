@@ -31,6 +31,8 @@ public class Customer {
 
     private String language;
 
+    private String pushToken;
+    
     @Field("user_login_count")
     private int userLoginCount;
 
@@ -42,4 +44,5 @@ public class Customer {
 
     @DBRef
     private List<Goal> goals;
+    
 }
