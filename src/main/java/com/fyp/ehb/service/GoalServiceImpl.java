@@ -186,6 +186,11 @@ public class GoalServiceImpl implements GoalService {
             List<GoalResponse> goalResponses = new ArrayList<>();
 
             for(Goal goal : goals){
+            	
+            	if(!goal.getGoalStatus().equalsIgnoreCase("A")) {
+            		continue;
+            	}
+            	
                 GoalResponse goalResponse = new GoalResponse();
 
                 goalResponse.setId(goal.getId());

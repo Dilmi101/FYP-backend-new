@@ -212,6 +212,10 @@ public class ExpenseServiceImpl implements ExpenseService {
         
         for(Expense e: expenses) {
         	
+        	if(!e.getExpenseStatus().equalsIgnoreCase("A")) {
+        		continue;
+        	}
+        	
     		Date stdate = e.getStartDate();  
     		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
     		String sd = dtFormat.format(stdate);
@@ -405,6 +409,10 @@ public class ExpenseServiceImpl implements ExpenseService {
         if(!expenseList.isEmpty() && expenseList != null) {
         	
         	for(Expense e : expenseList) {
+        		
+        		if(!e.getExpenseStatus().equalsIgnoreCase("A")) {
+        			continue;
+        		}
         		
         		ExpenseResponse expenseResponse = new ExpenseResponse();
         		        		

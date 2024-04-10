@@ -19,7 +19,8 @@ public enum EmpowerHerBizError {
 	EXPENSE_DELETE_FAILED("13", "Expense delete failed.", HttpStatus.BAD_REQUEST),
 	RAW_MATERIAL_CREATION_FAILED("14", "Cannot add raw material.", HttpStatus.BAD_REQUEST),
 	RAW_MATERIAL_CANNOT_FOUND("15", "Raw material cannot be found.", HttpStatus.BAD_REQUEST),
-	RAW_MATERIAL_UPDATE_FAILED("16", "Cannot update raw material", HttpStatus.BAD_REQUEST);
+	RAW_MATERIAL_UPDATE_FAILED("16", "Cannot update raw material", HttpStatus.BAD_REQUEST),
+	YOU_HAVE_REACHED_LOW_STOCK_LEVEL("17", "You have reched the low stock level.", HttpStatus.BAD_REQUEST);
 	
 	private String errorCode;
 	private String errorMessage;

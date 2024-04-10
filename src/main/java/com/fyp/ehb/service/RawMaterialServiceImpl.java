@@ -152,6 +152,10 @@ public class RawMaterialServiceImpl implements RawMaterialService {
         
         for(RawMaterial r : rawMaterials) {
         	
+        	if(!r.getStatus().equalsIgnoreCase("A")) {
+        		continue;
+        	}
+        	
         	String availability = "N";
         	
         	if(Integer.parseInt(r.getRemainingStock()) > 0) {
@@ -164,10 +168,10 @@ public class RawMaterialServiceImpl implements RawMaterialService {
         	response.setRemainingStock(r.getRemainingStock());
         	response.setRawMateId(r.getId());
         	
-        	List<RawMaterialHistory> rawHistory = rawMaterialHistoryDao.getRawMaterialsById(r.getId());
+        	rawMaterialList.add(response);
         	
         }
-    	return null;
+    	return rawMaterialList;
 
 	}
 
@@ -184,6 +188,28 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 			record.setCount(unit);
 			record.setRawMaterial(rawMaterial.get());
 			record = rawMaterialHistoryDao.save(record);
+			
+			RawMaterial raw = rawMaterial.get();
+			int sum = Integer.parseInt(raw.getRemainingStock());
+			
+			if(unit > sum && action.equalsIgnoreCase("USED")) {
+				throw new EmpowerHerBizException(EmpowerHerBizError.YOU_HAVE_REACHED_LOW_STOCK_LEVEL);
+			}
+			
+			if(sum > 0 && action.equalsIgnoreCase("USED")) {
+				sum = sum - unit;
+			}
+			
+			if(action.equalsIgnoreCase("REFILL")) {
+				sum = sum + unit;
+			}
+			
+			if(sum < Integer.parseInt(raw.getLowStockLvl())) {
+				throw new EmpowerHerBizException(EmpowerHerBizError.YOU_HAVE_REACHED_LOW_STOCK_LEVEL);
+			}
+			
+			raw.setRemainingStock(String.valueOf(sum));
+			raw = rawMaterialDao.save(raw);
 			
 			if(record != null){
             	hm.put("code", "000");
