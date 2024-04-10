@@ -19,4 +19,6 @@ public interface RawMaterialService {
 
 	public HashMap<String, String> updateProgressById(String id, int unit, String action) throws Exception;
 
+	public RawMaterialResponse getRawMaterialsById(String rawMaterialId) throws Exception;
+
 }

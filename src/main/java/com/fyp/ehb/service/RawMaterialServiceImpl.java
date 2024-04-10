@@ -1,8 +1,10 @@
 package com.fyp.ehb.service;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,7 @@ import com.fyp.ehb.enums.EmpowerHerBizError;
 import com.fyp.ehb.exception.EmpowerHerBizException;
 import com.fyp.ehb.model.AddRawMaterialRequest;
 import com.fyp.ehb.model.ExpenseResponse;
+import com.fyp.ehb.model.RawMaterialHistoryMain;
 import com.fyp.ehb.model.RawMaterialResponse;
 import com.fyp.ehb.repository.CustomerDao;
 import com.fyp.ehb.repository.RawMaterialHistoryDao;
@@ -187,6 +190,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 			record.setAction(action);
 			record.setCount(unit);
 			record.setRawMaterial(rawMaterial.get());
+			record.setCreatedDate(new Date());
 			record = rawMaterialHistoryDao.save(record);
 			
 			RawMaterial raw = rawMaterial.get();
@@ -224,6 +228,46 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 			throw new EmpowerHerBizException(EmpowerHerBizError.RAW_MATERIAL_CANNOT_FOUND);
 		}
 		return hm;
+	}
+
+	@Override
+	public RawMaterialResponse getRawMaterialsById(String rawMaterialId) throws Exception {
+		
+		RawMaterialResponse response = new RawMaterialResponse();
+		List<RawMaterialHistoryMain> rawHistoryList = new ArrayList<>();
+		
+		Optional<RawMaterial> existingRawMaterial = rawMaterialDao.findById(rawMaterialId);
+		
+		if(existingRawMaterial.isPresent()) {
+			
+			RawMaterial raw = existingRawMaterial.get();
+			
+			List<RawMaterialHistory> history = rawMaterialHistoryDao.getRawMaterialsById(rawMaterialId);
+			
+			if(history != null && !history.isEmpty()) {
+
+				for(RawMaterialHistory h : history) {
+					
+	        		Date createdD = h.getCreatedDate();  
+	        		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+	        		String cd = dtFormat.format(createdD); 
+					
+					RawMaterialHistoryMain rm = new RawMaterialHistoryMain();
+					rm.setAction(h.getAction().equalsIgnoreCase("REFILL") ? "Re-fill" : "Used");
+					rm.setCreatedDate(cd);
+					rm.setValue(String.valueOf(h.getCount()));
+					rawHistoryList.add(rm);
+					
+				}
+				
+				response.setRawHistoryList(rawHistoryList);
+				response.setAvailability(raw.getAvailability());
+				response.setName(raw.getName());
+				response.setRawMateId(raw.getId());
+				response.setRemainingStock(raw.getRemainingStock());
+			}
+		}
+		return response;
 	}
 
 }

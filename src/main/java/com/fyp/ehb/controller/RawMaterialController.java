@@ -91,5 +91,17 @@ public class RawMaterialController {
 
 		return mainResponse;
 	}
+	
+	@GetMapping(value="/{rawMaterialId}")
+	public MainResponse getRawMaterialsById(@PathVariable("rawMaterialId") String rawMaterialId) throws Exception {
+
+		RawMaterialResponse rawMaterial = rawMaterialService.getRawMaterialsById(rawMaterialId);
+
+		MainResponse mainResponse = new MainResponse();
+		mainResponse.setResponseCode("000");
+		mainResponse.setResponseObject(rawMaterial);
+
+		return mainResponse;
+	}
 
 }
