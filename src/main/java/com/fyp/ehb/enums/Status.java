@@ -8,7 +8,8 @@ public enum Status {
     YES_STATUS("Y","YES"),
     NO_STATUS("N","NO"),
     APPROVED_STATUS("A","APPROVED"),
-    DECLINED_STATUS("D","DECLINED");
+    DECLINED_STATUS("D","DECLINED"),
+    COMPLETED_STATUS("C","COMPLETED");
 
     private String status;
     private String description;
