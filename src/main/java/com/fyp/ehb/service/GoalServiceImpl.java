@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -44,10 +45,25 @@ public class GoalServiceImpl implements GoalService {
 
         Goal goal = new Goal();
 
+        SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date sDate = null;
+        Date eDate = null;
+
+        try {
+            sDate = inputDateFormat.parse(goalRequest.getStartDate());
+            eDate = inputDateFormat.parse(goalRequest.getEndDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String startDate = outputDateFormat.format(sDate);
+        String endDate = outputDateFormat.format(eDate);
+
         goal.setGoalTitle(goalRequest.getGoalTitle());
         goal.setGoalDescription(goalRequest.getGoalDescription());
-        goal.setStartDate(goalRequest.getStartDate());
-        goal.setEndDate(goalRequest.getEndDate());
+        goal.setStartDate(startDate);
+        goal.setEndDate(endDate);
         goal.setUnit(goalRequest.getUnit());
         goal.setTarget(goalRequest.getTarget());
         goal.setPriority(goal.getPriority());
@@ -98,6 +114,21 @@ public class GoalServiceImpl implements GoalService {
 
         Optional<Goal> goal = goalDao.findById(goalId);
 
+        SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date sDate = null;
+        Date eDate = null;
+
+        try {
+            sDate = inputDateFormat.parse(goalRequest.getStartDate());
+            eDate = inputDateFormat.parse(goalRequest.getEndDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String startDate = outputDateFormat.format(sDate);
+        String endDate = outputDateFormat.format(eDate);
+
         if(goal.isPresent()){
 
             Goal goalCurrent = goal.get();
@@ -105,8 +136,8 @@ public class GoalServiceImpl implements GoalService {
              goalCurrent.setId(goalId);
             goalCurrent.setGoalTitle(goalRequest.getGoalTitle());
             goalCurrent.setGoalDescription(goalRequest.getGoalDescription());
-            goalCurrent.setStartDate(goalRequest.getStartDate());
-            goalCurrent.setEndDate(goalRequest.getEndDate());
+            goalCurrent.setStartDate(startDate);
+            goalCurrent.setEndDate(endDate);
             goalCurrent.setUnit(goalRequest.getUnit());
             goalCurrent.setTarget(goalRequest.getTarget());
             goalCurrent.setPriority(goalRequest.getPriority());
@@ -344,10 +375,56 @@ public class GoalServiceImpl implements GoalService {
                 HashMap<String, String> hm = new HashMap<>();
 
                 if(history != null){
-                    hm.put("message", "Success");
+
+                    List<GoalHistory> records = goalHistoryDao.getGoalHistoriesByGoalId(id);
+
+                    double sum = 0.00;
+
+                    if(!records.isEmpty()) {
+                        for (GoalHistory goalHistory : records) {
+                            double achieved = Double.parseDouble(goalHistory.getAchievedAmount());
+                            sum += achieved;
+                        }
+                    }
+
+                    double target = Double.parseDouble(goal.get().getTarget());
+
+                    if(sum >= target){
+                        hm.put("isAchieved", Status.YES_STATUS.getStatus());
+
+                        goal.get().setGoalStatus(Status.COMPLETED_STATUS.getStatus());
+                        goalDao.save(goal.get());
+                    }
+                    else{
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                        long days;
+
+                        try {
+                            Date goalEndDate = format.parse(goal.get().getEndDate());
+
+                            Instant thisDate = Instant.now();
+                            Instant endDate = goalEndDate.toInstant();
+
+                            Duration duration = Duration.between(thisDate, endDate);
+                            days = duration.toDays();
+
+                            if (days <= 0) {
+                                hm.put("isAchieved", Status.NO_STATUS.getStatus());
+                            }
+                            else{
+                                hm.put("isAchieved", Status.PENDING_STATUS.getStatus());
+                            }
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    hm.put("title", goal.get().getGoalTitle());
                 }
                 else{
-                    hm.put("message", "Failed");
+                    throw new EmpowerHerBizException(EmpowerHerBizError.GOAL_PROGRESS_UPDATE_FAILED);
                 }
                 return hm;
             }
