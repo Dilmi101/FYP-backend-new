@@ -3,10 +3,12 @@ package com.fyp.ehb.controller;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fyp.ehb.model.BudgetCreateRequest;
@@ -34,4 +36,11 @@ public class BudgetController {
 		
 		
 	}
+	
+//	@GetMapping(value="/{customerId}/busgetList")
+//	public MainResponse getBudgetList(
+//			@RequestParam(name = "type", required = true, defaultValue = "PLANNED") String type,
+//			@RequestParam(name = "month", required = true) String month) throws Exception {
+//		
+//	}
 }
