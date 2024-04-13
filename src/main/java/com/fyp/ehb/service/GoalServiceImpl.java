@@ -72,6 +72,7 @@ public class GoalServiceImpl implements GoalService {
         goal.setReminder(goalRequest.getReminder());
         goal.setGoalStatus(Status.ACTIVE_STATUS.getStatus());
         goal.setIsRecurringGoal(Status.NO_STATUS.getStatus());
+        goal.setNextExecutionDate(startDate);
 
         Optional<Customer> customer = customerDao.findById(customerId);
 
