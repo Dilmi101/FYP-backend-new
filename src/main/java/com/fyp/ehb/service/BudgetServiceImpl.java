@@ -1,0 +1,77 @@
+package com.fyp.ehb.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.fyp.ehb.domain.Budget;
+import com.fyp.ehb.domain.Customer;
+import com.fyp.ehb.enums.EmpowerHerBizError;
+import com.fyp.ehb.exception.EmpowerHerBizException;
+import com.fyp.ehb.model.BudgetCreateRequest;
+import com.fyp.ehb.model.BudgetCreateRequest.BudgetCreateSubRequest;
+import com.fyp.ehb.repository.BudgetDao;
+import com.fyp.ehb.repository.CustomerDao;
+
+@Service
+public class BudgetServiceImpl implements BudgetService {
+	
+	@Autowired
+	private CustomerDao customerDao;
+	
+	@Autowired
+	private BudgetDao budgetDao;
+
+	@Override
+	public HashMap<String, String> createBudget(String customerId, BudgetCreateRequest budgetCreateRequest)
+			throws Exception {
+		
+		//get month from FE >> JAN,FEB and this into db
+		//write a search query for budget expense list
+		HashMap<String, String> hm = new HashMap<>();
+		
+		Optional<Customer> customer = customerDao.findById(customerId);
+		
+		if(!customer.isPresent()) {
+			throw new EmpowerHerBizException(EmpowerHerBizError.CUSTOMER_NOT_FOUND);
+		}
+		
+		List<Budget> existingList = budgetDao.findByCustomerId(customerId);
+		
+		if(existingList != null && !existingList.isEmpty()) {
+			
+			for(Budget b : existingList) {
+				b.setStatus("D");
+				budgetDao.save(b);
+			}
+		}
+		
+		for(BudgetCreateSubRequest subReq : budgetCreateRequest.getExpenses()) {
+			
+			Budget newBudget = new Budget();
+			newBudget.setAmount(subReq.getActualAmt());
+			newBudget.setCustomer(customer.get());
+			newBudget.setExpenseId(subReq.getExpenseId());
+			newBudget.setMonth(subReq.getMonth());
+			newBudget.setTitle(subReq.getTitle());
+			newBudget.setStatus("A");
+			
+			newBudget = budgetDao.save(newBudget);
+			
+			if(newBudget != null) {
+				hm.put("code", "000");
+				hm.put("message", "Your budget plan has been successfully created.");
+			} else {
+				hm.put("code", "999");
+				hm.put("message", "Cannot create your budget plan.");
+			}
+		}
+				
+		return hm;
+	}
+
+	
+}

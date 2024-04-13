@@ -186,13 +186,6 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		
 		if(rawMaterial.isPresent()) {
 			
-			RawMaterialHistory record = new RawMaterialHistory();
-			record.setAction(action);
-			record.setCount(unit);
-			record.setRawMaterial(rawMaterial.get());
-			record.setCreatedDate(new Date());
-			record = rawMaterialHistoryDao.save(record);
-			
 			RawMaterial raw = rawMaterial.get();
 			int sum = Integer.parseInt(raw.getRemainingStock());
 			
@@ -208,9 +201,16 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				sum = sum + unit;
 			}
 			
-			if(sum < Integer.parseInt(raw.getLowStockLvl())) {
+			if(Integer.parseInt(raw.getLowStockLvl()) >= sum) {
 				throw new EmpowerHerBizException(EmpowerHerBizError.YOU_HAVE_REACHED_LOW_STOCK_LEVEL);
 			}
+			
+			RawMaterialHistory record = new RawMaterialHistory();
+			record.setAction(action);
+			record.setCount(unit);
+			record.setRawMaterial(rawMaterial.get());
+			record.setCreatedDate(new Date());
+			record = rawMaterialHistoryDao.save(record);
 			
 			raw.setRemainingStock(String.valueOf(sum));
 			raw = rawMaterialDao.save(raw);
