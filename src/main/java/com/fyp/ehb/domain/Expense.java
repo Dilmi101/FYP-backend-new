@@ -45,4 +45,6 @@ public class Expense {
 	@DBRef
 	private Customer customer;
 	
+    @Field("next_execution_date")
+    private String nextExecutionDate;
 }

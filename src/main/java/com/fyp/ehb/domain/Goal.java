@@ -45,4 +45,7 @@ public class Goal {
 
     @DBRef
     private List<GoalHistory> histories;
+    
+    @Field("next_execution_date")
+    private String nextExecutionDate;
 }
