@@ -496,27 +496,30 @@ public class ExpenseServiceImpl implements ExpenseService {
 					throw new EmpowerHerBizException(EmpowerHerBizError.REACHED_TARGET_EXPENSE);
 				}
 				
-				int sum = 0;
+				BigDecimal sum = new BigDecimal(0);
 				
                 List<ExpenseHistory> records = expenseHistoryDao.getExpenseHistoryById(ex.getId());
                 
-                for(ExpenseHistory eh : records) {
-                	sum = sum + Integer.parseInt(eh.getAchievedAmount());
+                if(records != null && !records.isEmpty()) {
+                    for(ExpenseHistory eh : records) {
+                    	if(eh.getAchievedAmount() != null) {
+                        	sum = sum.add(new BigDecimal(eh.getAchievedAmount()));
+                    	}
+                    }
                 }
                 
-                int sum1 = sum;
-                sum = sum1 + Integer.parseInt(amount);
+                BigDecimal sum1 = sum;
+                sum = sum1.add(new BigDecimal(amount));
                 
-				if(new BigDecimal(sum).compareTo(new BigDecimal(ex.getAmount())) == 1) {
+				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 1) {
 					throw new EmpowerHerBizException("20", "You will exceed the target if you add this amount. "
-							+ "You can add only " + (Integer.parseInt(ex.getAmount()) - sum1) + " to reach the target.", HttpStatus.BAD_GATEWAY);
+							+ "You can add only " + (new BigDecimal(ex.getAmount()).subtract(sum1)) + " to reach the target.", HttpStatus.BAD_GATEWAY);
 				}
                 
-				if(new BigDecimal(sum).compareTo(new BigDecimal(ex.getAmount())) == 0) {
+				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 0) {
 					ex.setExpenseStatus("C");
 					expenseDao.save(ex);
 				}
-
 				
 				ExpenseHistory record = new ExpenseHistory();
 				record.setExpense(expense.get());
@@ -524,6 +527,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 				record.setCreatedDate(new Date());
 				
 				record = expenseHistoryDao.save(record);
+				
+				ex.setActualAmount(String.valueOf(sum));
+				expenseDao.save(ex);
 				
                 HashMap<String, String> hm = new HashMap<>();
 

@@ -47,4 +47,6 @@ public class Expense {
 	
     @Field("next_execution_date")
     private String nextExecutionDate;
+    
+    private String actualAmount;
 }
