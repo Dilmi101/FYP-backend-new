@@ -71,6 +71,7 @@ public class BudgetServiceImpl implements BudgetService {
 			newBudget.setMonth(subReq.getMonth().toUpperCase());
 			newBudget.setTitle(subReq.getTitle());
 			newBudget.setStatus("A");
+			newBudget.setType("PLANNED");
 			
 			newBudget = budgetDao.save(newBudget);
 			
