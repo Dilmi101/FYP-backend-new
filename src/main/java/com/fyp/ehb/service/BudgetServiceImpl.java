@@ -115,7 +115,7 @@ public class BudgetServiceImpl implements BudgetService {
 			}
 			
 			budget.setExpenseList(list);
-			budget.setTotalBudget(String.valueOf(sum));
+			budget.setTotalBudget(sum.toString());
 			
 			
 		} else {
@@ -141,7 +141,7 @@ public class BudgetServiceImpl implements BudgetService {
 			}
 			
 			budget.setExpenseList(list);
-			budget.setTotalBudget(String.valueOf(sum));
+			budget.setTotalBudget(sum.toString());
 			
 		}
 		return budget;
