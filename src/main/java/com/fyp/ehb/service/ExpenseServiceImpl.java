@@ -94,6 +94,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setReminder(addExpenseRequest.getReminder());
 		expense.setStartDate(startDate);
 		expense.setCustomer(cust);
+		expense.setActualAmount("0");
 		
 		expense = expenseDao.save(expense);
 		
