@@ -265,6 +265,11 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				response.setName(raw.getName());
 				response.setRawMateId(raw.getId());
 				response.setRemainingStock(raw.getRemainingStock());
+				response.setLowStockLvl(raw.getLowStockLvl());
+				response.setReminder(raw.getReminder());
+				response.setSupplierEmail(raw.getSupplierEmail());
+				response.setSupplierName(raw.getSupplierName());
+				response.setUnit(raw.getUnit());
 			}
 		}
 		return response;
