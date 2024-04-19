@@ -173,6 +173,11 @@ public class RawMaterialServiceImpl implements RawMaterialService {
         	response.setName(r.getName());
         	response.setRemainingStock(r.getRemainingStock());
         	response.setRawMateId(r.getId());
+			response.setLowStockLvl(r.getLowStockLvl());
+			response.setReminder(r.getReminder());
+			response.setSupplierEmail(r.getSupplierEmail());
+			response.setSupplierName(r.getSupplierName());
+			response.setUnit(r.getUnit());
         	
         	rawMaterialList.add(response);
         	
@@ -278,6 +283,11 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				response.setName(raw.getName());
 				response.setRawMateId(raw.getId());
 				response.setRemainingStock(raw.getRemainingStock());
+				response.setLowStockLvl(raw.getLowStockLvl());
+				response.setReminder(raw.getReminder());
+				response.setSupplierEmail(raw.getSupplierEmail());
+				response.setSupplierName(raw.getSupplierName());
+				response.setUnit(raw.getUnit());
 			}
 		}
 		return response;

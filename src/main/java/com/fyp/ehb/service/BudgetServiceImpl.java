@@ -1,5 +1,7 @@
 package com.fyp.ehb.service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -9,12 +11,17 @@ import org.springframework.stereotype.Service;
 
 import com.fyp.ehb.domain.Budget;
 import com.fyp.ehb.domain.Customer;
+import com.fyp.ehb.domain.Expense;
+import com.fyp.ehb.domain.ExpenseHistory;
 import com.fyp.ehb.enums.EmpowerHerBizError;
 import com.fyp.ehb.exception.EmpowerHerBizException;
 import com.fyp.ehb.model.BudgetCreateRequest;
 import com.fyp.ehb.model.BudgetCreateRequest.BudgetCreateSubRequest;
+import com.fyp.ehb.model.BudgetCreateSubResponse;
 import com.fyp.ehb.repository.BudgetDao;
 import com.fyp.ehb.repository.CustomerDao;
+import com.fyp.ehb.repository.ExpenseDao;
+import com.fyp.ehb.repository.ExpenseHistoryDao;
 
 @Service
 public class BudgetServiceImpl implements BudgetService {
@@ -24,6 +31,12 @@ public class BudgetServiceImpl implements BudgetService {
 	
 	@Autowired
 	private BudgetDao budgetDao;
+	
+	@Autowired
+	private ExpenseHistoryDao expenseHistoryDao;
+	
+	@Autowired
+	private ExpenseDao expenseDao;
 
 	@Override
 	public HashMap<String, String> createBudget(String customerId, BudgetCreateRequest budgetCreateRequest)
@@ -55,9 +68,10 @@ public class BudgetServiceImpl implements BudgetService {
 			newBudget.setAmount(subReq.getActualAmt());
 			newBudget.setCustomer(customer.get());
 			newBudget.setExpenseId(subReq.getExpenseId());
-			newBudget.setMonth(subReq.getMonth());
+			newBudget.setMonth(subReq.getMonth().toUpperCase());
 			newBudget.setTitle(subReq.getTitle());
 			newBudget.setStatus("A");
+			newBudget.setType("PLANNED");
 			
 			newBudget = budgetDao.save(newBudget);
 			
@@ -71,6 +85,66 @@ public class BudgetServiceImpl implements BudgetService {
 		}
 				
 		return hm;
+	}
+
+	@Override
+	public BudgetCreateSubResponse getBudgetList(String customerId, String month, String type) throws Exception {
+		
+		BudgetCreateSubResponse budget = new BudgetCreateSubResponse();
+		List<BudgetCreateSubRequest> list = new ArrayList<>();
+		BigDecimal sum = new BigDecimal(0);
+		
+		List<Budget> budgetList = budgetDao.getBudgetListByCustomerAndMonth(customerId, month.toUpperCase());
+		
+		if(type.equalsIgnoreCase("PLANNED")) {
+
+			for(Budget b : budgetList) {
+				
+				if(!b.getStatus().equalsIgnoreCase("A")) {
+					continue;
+				}
+				
+				sum = sum.add(new BigDecimal(b.getAmount()));
+				
+				BudgetCreateSubRequest response = new BudgetCreateSubRequest();
+				response.setActualAmt(b.getAmount());
+				response.setExpenseId(b.getExpenseId());
+				response.setMonth(b.getMonth());
+				response.setTitle(b.getTitle());
+				list.add(response);
+			}
+			
+			budget.setExpenseList(list);
+			budget.setTotalBudget(sum.toString());
+			
+			
+		} else {
+			
+			for(Budget b : budgetList) {
+								
+				if(!b.getStatus().equalsIgnoreCase("A")) {
+					continue;
+				}
+				
+				Optional<Expense> expense = expenseDao.findById(b.getExpenseId());
+				Expense expen = expense.get();
+				
+				sum = sum.add(new BigDecimal(expen.getActualAmount()));
+				
+				BudgetCreateSubRequest response = new BudgetCreateSubRequest();
+				response.setActualAmt(expen.getActualAmount());
+				response.setExpenseId(b.getExpenseId());
+				response.setMonth(b.getMonth());
+				response.setTitle(b.getTitle());
+				list.add(response);
+
+			}
+			
+			budget.setExpenseList(list);
+			budget.setTotalBudget(sum.toString());
+			
+		}
+		return budget;
 	}
 
 	

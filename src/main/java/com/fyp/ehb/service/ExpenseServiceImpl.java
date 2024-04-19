@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,6 +94,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setReminder(addExpenseRequest.getReminder());
 		expense.setStartDate(startDate);
 		expense.setCustomer(cust);
+		expense.setActualAmount("0");
 		
 		expense = expenseDao.save(expense);
 		
@@ -488,12 +490,47 @@ public class ExpenseServiceImpl implements ExpenseService {
 		
 		if(expense.isPresent()) {
 			if(Double.parseDouble(amount) > 0) {
+				
+				Expense ex = expense.get();
+				
+				if(new BigDecimal(amount).compareTo(new BigDecimal(ex.getAmount())) == 1) {
+					throw new EmpowerHerBizException(EmpowerHerBizError.REACHED_TARGET_EXPENSE);
+				}
+				
+				BigDecimal sum = new BigDecimal(0);
+				
+                List<ExpenseHistory> records = expenseHistoryDao.getExpenseHistoryById(ex.getId());
+                
+                if(records != null && !records.isEmpty()) {
+                    for(ExpenseHistory eh : records) {
+                    	if(eh.getAchievedAmount() != null) {
+                        	sum = sum.add(new BigDecimal(eh.getAchievedAmount()));
+                    	}
+                    }
+                }
+                
+                BigDecimal sum1 = sum;
+                sum = sum1.add(new BigDecimal(amount));
+                
+				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 1) {
+					throw new EmpowerHerBizException("20", "You will exceed the target if you add this amount. "
+							+ "You can add only " + (new BigDecimal(ex.getAmount()).subtract(sum1)) + " to reach the target.", HttpStatus.BAD_GATEWAY);
+				}
+                
+				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 0) {
+					ex.setExpenseStatus("C");
+					expenseDao.save(ex);
+				}
+				
 				ExpenseHistory record = new ExpenseHistory();
 				record.setExpense(expense.get());
 				record.setAchievedAmount(amount);
 				record.setCreatedDate(new Date());
 				
 				record = expenseHistoryDao.save(record);
+				
+				ex.setActualAmount(String.valueOf(sum));
+				expenseDao.save(ex);
 				
                 HashMap<String, String> hm = new HashMap<>();
 

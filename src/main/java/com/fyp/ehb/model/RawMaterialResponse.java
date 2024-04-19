@@ -17,5 +17,10 @@ public class RawMaterialResponse {
 	private String remainingStock;
 	private String availability;
 	private String rawMateId;
+	private String lowStockLvl;
+	private String unit;
+	private String reminder;
+	private String supplierName;
+	private String supplierEmail;
 	private List<RawMaterialHistoryMain> rawHistoryList;
 }

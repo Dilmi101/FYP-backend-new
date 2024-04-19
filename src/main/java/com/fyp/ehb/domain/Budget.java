@@ -19,6 +19,7 @@ public class Budget {
 	private String status;
 	private String month;
 	private String title;
+	private String type;
 	
 	@DBRef
 	private Customer customer;

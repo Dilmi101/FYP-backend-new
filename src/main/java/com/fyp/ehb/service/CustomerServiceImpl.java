@@ -98,6 +98,7 @@ public class CustomerServiceImpl implements CustomerService {
         response.setName(customer.getName());
         response.setNic(customer.getNic());
         response.setUsername(customer.getUsername());
+        response.setBusiness(customer.getBusiness());
 
         return response;
 		

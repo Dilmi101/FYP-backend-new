@@ -1,6 +1,7 @@
 package com.fyp.ehb.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fyp.ehb.domain.Business;
 
 import lombok.Data;
 
@@ -14,4 +15,5 @@ public class CustomerResponse {
 	private String email;
 	private String nic;
 	private String mobileNo;
+	private Business business;
 }
