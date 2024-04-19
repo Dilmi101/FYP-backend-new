@@ -43,6 +43,9 @@ public class RawMaterialServiceImpl implements RawMaterialService {
     
     @Autowired
     private RawMaterialHistoryDao rawMaterialHistoryDao;
+
+	@Autowired
+	private NotificationService notificationService;
 	
 	@Override
 	public HashMap<String, String> addRawMaterial(AddRawMaterialRequest addRawMaterialRequest, String customerId)
@@ -199,6 +202,16 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 			
 			if(action.equalsIgnoreCase("REFILL")) {
 				sum = sum + unit;
+			}
+
+			if(Integer.parseInt(raw.getLowStockLvl()) >= sum) {
+				try {
+					if(raw.getSupplierEmail() != null && !raw.getSupplierEmail().isEmpty()){
+						notificationService.sendSimpleMail(raw.getSupplierEmail(), raw.getSupplierName(), raw.getName(), raw.getCustomer().getBusiness().getBusinessName());
+					}
+				} catch (Exception e){
+					e.printStackTrace();
+				}
 			}
 			
 			if(Integer.parseInt(raw.getLowStockLvl()) >= sum) {
