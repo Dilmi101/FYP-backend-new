@@ -1,16 +1,21 @@
 package com.fyp.ehb.service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.concurrent.Future;
 
+import com.fyp.ehb.model.EmailRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -26,6 +31,12 @@ public class NotificationServiceImpl implements NotificationService{
 	private Environment env;
 	
 	private Log logger = LogFactory.getLog(NotificationServiceImpl.class);
+
+	@Autowired
+	private JavaMailSender javaMailSender;
+
+	@Value("${spring.mail.username}")
+	private String emailUsername;
 
 	@Override
 	@Async
@@ -60,6 +71,39 @@ public class NotificationServiceImpl implements NotificationService{
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	@Async
+	public String sendSimpleMail(String recipient, String supplierName, String RawMaterialName, String businessName) throws Exception {
+
+		try {
+
+			HashMap<String, Object> data = new HashMap<String, Object>();
+			data.put("supplierName", supplierName);
+			data.put("RawMaterialName", RawMaterialName);
+			data.put("businessName", businessName);
+
+			String messageBody = "Dear " + supplierName + "\n\n" +
+					"The inventory of " + RawMaterialName + " at " +  businessName + " is running low. The business owner will contact you shortly to place an order for replenishment.\n\n" +
+					"Thank you.\n\n";
+
+			SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+
+			simpleMailMessage.setFrom(emailUsername);
+			simpleMailMessage.setTo(recipient);
+			simpleMailMessage.setSubject("Urgent: Low Stock Level Notification for " + businessName);
+			simpleMailMessage.setText(messageBody);
+
+			javaMailSender.send(simpleMailMessage);
+
+			return "Email Sent";
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Failed";
+		}
+
 	}
 
 }
