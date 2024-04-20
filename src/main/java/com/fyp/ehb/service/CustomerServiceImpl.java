@@ -8,12 +8,16 @@ import com.fyp.ehb.model.SignupRequest;
 import com.fyp.ehb.repository.BusinessDao;
 import com.fyp.ehb.repository.CustomerDao;
 import com.fyp.ehb.util.EhbUtil;
+
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import com.fyp.ehb.model.CustomerResponse;
+import com.fyp.ehb.model.ForgotPwdRequest;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -105,23 +109,73 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
     @Override
-    public Customer updateCustomerProfile(String customerId, CustomerResponse customerResponse) throws EmpowerHerBizException {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("username").is(customerId));
-        Customer customer = mongoTemplate.findOne(query, Customer.class);
+    public CustomerResponse updateCustomerProfile(String customerId, CustomerResponse customerResponse) throws EmpowerHerBizException {
+        
+		Optional<Customer> customer = customerDao.findById(customerId);
+		
+		if(!customer.isPresent()) {
+			throw new EmpowerHerBizException(EmpowerHerBizError.CUSTOMER_NOT_FOUND);
+		}		
 
-        if (customer == null) {
-            throw new EmpowerHerBizException(EmpowerHerBizError.INVALID_USERNAME);
-        } else {
-            Customer customerData = new Customer();
+        Customer customerData = new Customer();
 
-            customerData.setEmail(customerResponse.getEmail());
-            customerData.setId(customerResponse.getId());
-            customerData.setName(customerResponse.getName());
-            customerData.setNic(customerResponse.getNic());
-            customerData.setUsername(customerResponse.getUsername());
+        customerData.setEmail(customerResponse.getEmail());
+        customerData.setId(customerResponse.getId());
+        customerData.setName(customerResponse.getName());
+        customerData.setNic(customerResponse.getNic());
+        customerData.setUsername(customerResponse.getUsername());
 
-            return customerDao.save(customerData);
+        customerData = customerDao.save(customerData);
+        
+        if(customerData == null) {
+        	throw new EmpowerHerBizException(EmpowerHerBizError.CUSTOMER_DETAILS_UPDATE_FAILED);
         }
+        
+        CustomerResponse response = new CustomerResponse();
+        response.setEmail(customerData.getEmail());
+        response.setId(customerData.getId());
+        response.setMobileNo(customerData.getMobile());
+        response.setName(customerData.getName());
+        response.setNic(customerData.getNic());
+        response.setUsername(customerData.getUsername());
+        response.setBusiness(customerData.getBusiness());
+        
+        return response;
+    
     }
+
+	@Override
+	public CustomerResponse forgotPwd(ForgotPwdRequest forgotPwdRequest) throws Exception {
+		
+		String password = forgotPwdRequest.getPassword();
+		
+        Query query = new Query();
+        query.addCriteria(Criteria.where("mobile").is(forgotPwdRequest.getMobileNo()));
+        Customer customer = mongoTemplate.findOne(query, Customer.class);
+        
+        if(customer == null) {
+        	throw new EmpowerHerBizException(EmpowerHerBizError.INVALID_MOBILE);
+        }
+        
+        String hashedPwd = EhbUtil.computeSHA256Hash(password);
+        
+        customer.setPassword(hashedPwd);
+        
+        customer = customerDao.save(customer);
+        
+        if(customer == null) {
+        	throw new EmpowerHerBizException(EmpowerHerBizError.PWD_UPDATE_FAILED);
+        }
+        
+        CustomerResponse response = new CustomerResponse();
+        response.setEmail(customer.getEmail());
+        response.setId(customer.getId());
+        response.setMobileNo(customer.getMobile());
+        response.setName(customer.getName());
+        response.setNic(customer.getNic());
+        response.setUsername(customer.getUsername());
+        response.setBusiness(customer.getBusiness());
+
+        return response;
+	}
 }
