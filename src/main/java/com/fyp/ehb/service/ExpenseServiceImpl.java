@@ -513,8 +513,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 sum = sum1.add(new BigDecimal(amount));
                 
 				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 1) {
-					throw new EmpowerHerBizException("20", "You will exceed the target if you add this amount. "
-							+ "You can add only " + (new BigDecimal(ex.getAmount()).subtract(sum1)) + " to reach the target.", HttpStatus.BAD_GATEWAY);
+					throw new EmpowerHerBizException(EmpowerHerBizError.REACHED_TARGET_EXPENSE);
 				}
                 
 				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 0) {

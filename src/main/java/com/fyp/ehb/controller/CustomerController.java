@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.fyp.ehb.model.CustomerResponse;
+import com.fyp.ehb.model.ForgotPwdRequest;
 import com.fyp.ehb.model.MainResponse;
 import com.fyp.ehb.service.CustomerService;
 
@@ -51,7 +52,19 @@ public class CustomerController {
 	public MainResponse updateProfile(@PathVariable(value = "customerId") String customerId,
 									   @RequestBody CustomerResponse customerResponse) {
 
-		Customer customer = customerService.updateCustomerProfile(customerId,customerResponse);
+		CustomerResponse customer = customerService.updateCustomerProfile(customerId,customerResponse);
+
+		MainResponse mainResponse = new MainResponse();
+		mainResponse.setResponseCode("000");
+		mainResponse.setResponseObject(customer);
+
+		return mainResponse;
+	}
+	
+	@PutMapping(value="/forgotPwd")
+	public MainResponse forgotPwd(@RequestBody ForgotPwdRequest forgotPwdRequest) throws Exception {
+
+		CustomerResponse customer = customerService.forgotPwd(forgotPwdRequest);
 
 		MainResponse mainResponse = new MainResponse();
 		mainResponse.setResponseCode("000");

@@ -22,7 +22,10 @@ public enum EmpowerHerBizError {
 	RAW_MATERIAL_UPDATE_FAILED("16", "Cannot update raw material", HttpStatus.BAD_REQUEST),
 	YOU_HAVE_REACHED_LOW_STOCK_LEVEL("17", "You have reached the low stock level. The respective supplier has been notified.", HttpStatus.BAD_REQUEST),
 	GOAL_PROGRESS_UPDATE_FAILED("18", "Goal progress update failed.", HttpStatus.BAD_REQUEST),
-	REACHED_TARGET_EXPENSE("19", "You have exceeded your budget for this expense.", HttpStatus.BAD_REQUEST);
+	REACHED_TARGET_EXPENSE("19", "You have exceeded your budget for this expense.", HttpStatus.BAD_REQUEST),
+	INVALID_MOBILE("20", "No customer can be found for this mobile number. Please re-check.", HttpStatus.BAD_REQUEST),
+	PWD_UPDATE_FAILED("21", "Password update failed.", HttpStatus.BAD_REQUEST),
+	CUSTOMER_DETAILS_UPDATE_FAILED("22", "Customer details update failed.", HttpStatus.BAD_REQUEST);
 
 	private String errorCode;
 	private String errorMessage;
