@@ -2,6 +2,8 @@ package com.fyp.ehb.service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -84,8 +86,10 @@ public class ExpenseServiceImpl implements ExpenseService {
 			e.printStackTrace();
 		}
 	    
+		String formattedAmout = formatCurrencyDecimalPoints(addExpenseRequest.getAmount());
+		
 		Expense expense = new Expense();
-		expense.setAmount(addExpenseRequest.getAmount());
+		expense.setAmount(formattedAmout);
 		expense.setEndDate(endDate);
 		expense.setExpenseCategory(addExpenseRequest.getExpenseCategory());
 		expense.setExpenseDescription(addExpenseRequest.getExpenseDescription());
@@ -143,7 +147,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 				e.printStackTrace();
 			}
 			
-			existingEx.setAmount(addExpenseRequest.getAmount());
+			String formattedAmout = formatCurrencyDecimalPoints(addExpenseRequest.getAmount());
+			
+			existingEx.setAmount(formattedAmout);
 			existingEx.setEndDate(endDate);
 			existingEx.setExpenseCategory(addExpenseRequest.getExpenseCategory());
 			existingEx.setExpenseDescription(addExpenseRequest.getExpenseDescription());
@@ -225,9 +231,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     		Date endate = e.getEndDate();  
     		SimpleDateFormat edtFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
     		String ed = edtFormat.format(endate); 
+    		
+    		String formattedAmout = formatCurrencyDecimalPoints(e.getAmount());
         	
         	ExpenseResponse expense = new ExpenseResponse();
-        	expense.setAmount(e.getAmount());
+        	expense.setAmount(formattedAmout);
         	expense.setCustomer(customer.get().getId());
         	expense.setDuration(e.getDuration());
         	expense.setEndDate(ed);
@@ -264,7 +272,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 MathContext mc = new MathContext(3);
                 BigDecimal target = new BigDecimal(e.getAmount());
                 BigDecimal remaining = target.subtract(sum);//target - sum;
-                BigDecimal percentage = sum.divide(target).multiply(new BigDecimal(100)).round(mc);
+                BigDecimal percentage = sum.divide(target, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
 
                 expense.setProgrssPercentage(percentage.toString());
                 expense.setPendingTarget(String.valueOf(remaining));
@@ -356,7 +364,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             MathContext mc = new MathContext(3);
             BigDecimal target = new BigDecimal(existingExpense.getAmount());
             BigDecimal remaining = target.subtract(sum);//target - sum;
-            BigDecimal percentage = sum.divide(target).multiply(new BigDecimal(100)).round(mc);
+            BigDecimal percentage = sum.divide(target, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
 
             response.setProgrssPercentage(percentage.toString());
             response.setPendingTarget(String.valueOf(remaining));
@@ -463,7 +471,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                     MathContext mc = new MathContext(3);
                     BigDecimal target = new BigDecimal(e.getAmount());
                     BigDecimal remaining = target.subtract(sum);//target - sum;
-                    BigDecimal percentage = sum.divide(target).multiply(new BigDecimal(100)).round(mc);
+                    BigDecimal percentage = sum.divide(target, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
 
                     expenseResponse.setProgrssPercentage(percentage.toString());
                     expenseResponse.setPendingTarget(String.valueOf(remaining));
@@ -551,4 +559,15 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	}
 
+	public static synchronized String formatCurrencyDecimalPoints(String value){
+		
+		try {
+			DecimalFormat df = new DecimalFormat("0.00");
+			return df.format(Double.parseDouble(value));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return value;
+		}
+	}
+	
 }
