@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,7 @@ import com.fyp.ehb.model.GoalResponse;
 import com.fyp.ehb.repository.CustomerDao;
 import com.fyp.ehb.repository.ExpenseDao;
 import com.fyp.ehb.repository.ExpenseHistoryDao;
+import com.fyp.ehb.util.EhbUtil;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -71,9 +73,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 		Customer cust = customer.get();
 		
 	    String sDate = addExpenseRequest.getStartDate();  
-	    Date startDate = new Date();
+	    Date startDate = null;
 		try {
-			startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(sDate);
+			startDate = EhbUtil.dateFromString(sDate, "yyyy-MM-dd HH:mm:ss");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -81,7 +83,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	    String eDate = addExpenseRequest.getEndDate();  
 	    Date endDate = new Date();
 		try {
-			endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(eDate);
+			endDate = EhbUtil.dateFromString(eDate, "yyyy-MM-dd HH:mm:ss");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -134,7 +136,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		    String sDate = addExpenseRequest.getStartDate();  
 		    Date startDate = new Date();
 			try {
-				startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(sDate);
+				startDate = EhbUtil.dateFromString(sDate, "yyyy-MM-dd HH:mm:ss");
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -142,7 +144,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		    String eDate = addExpenseRequest.getEndDate();  
 		    Date endDate = new Date();
 			try {
-				endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(eDate);
+				endDate = EhbUtil.dateFromString(eDate, "yyyy-MM-dd HH:mm:ss");
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
