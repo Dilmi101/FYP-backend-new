@@ -225,11 +225,11 @@ public class ExpenseServiceImpl implements ExpenseService {
         	}
         	
     		Date stdate = e.getStartDate();  
-    		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+    		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
     		String sd = dtFormat.format(stdate);
     		
     		Date endate = e.getEndDate();  
-    		SimpleDateFormat edtFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+    		SimpleDateFormat edtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
     		String ed = edtFormat.format(endate); 
     		
     		String formattedAmout = formatCurrencyDecimalPoints(e.getAmount());
@@ -305,11 +305,11 @@ public class ExpenseServiceImpl implements ExpenseService {
 		Expense existingExpense = expense.get();
 		
 		Date startDate = existingExpense.getStartDate();  
-		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		String strDate = dateFormat1.format(startDate);  
 		
 		Date endDate = existingExpense.getStartDate();  
-		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		String eDate = dateFormat2.format(endDate);  
 		
 		response.setAmount(existingExpense.getAmount());
@@ -337,7 +337,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 sum = sum.add(achieved);
                 
         		Date expCreatedD = record.getCreatedDate();  
-        		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+        		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
         		String exD = dtFormat.format(expCreatedD); 
         		
                 ExpenseHistoryMain exmainRes = new ExpenseHistoryMain();
@@ -427,11 +427,11 @@ public class ExpenseServiceImpl implements ExpenseService {
         		ExpenseResponse expenseResponse = new ExpenseResponse();
         		        		
         		Date sd = e.getStartDate();  
-        		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+        		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
         		String strDate = dateFormat1.format(sd);  
         		
         		Date endD = e.getStartDate();  
-        		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+        		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
         		String ed = dateFormat2.format(endD);  
         		
         		expenseResponse.setAmount(e.getAmount());
