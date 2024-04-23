@@ -310,7 +310,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		String strDate = dateFormat1.format(startDate);  
 		
-		Date endDate = existingExpense.getStartDate();  
+		Date endDate = existingExpense.getEndDate();  
 		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		String eDate = dateFormat2.format(endDate);  
 		
