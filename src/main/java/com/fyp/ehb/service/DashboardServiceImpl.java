@@ -19,6 +19,7 @@ import com.fyp.ehb.model.DashboardD;
 import com.fyp.ehb.model.ExpenseResponse;
 import com.fyp.ehb.model.GoalResponse;
 import com.fyp.ehb.model.MainDashboard;
+import com.fyp.ehb.model.RawMaterialResponse;
 import com.fyp.ehb.repository.CustomerDao;
 import com.fyp.ehb.repository.DashboardDao;
 
@@ -39,6 +40,9 @@ public class DashboardServiceImpl implements DashboardService {
     
     @Autowired
     private GoalService goalService;
+    
+    @Autowired
+    private RawMaterialService rawMaterialService;
 
 	@Override
 	public HashMap<String, String> createDashboard(MainDashboard dashboard, String customerId) throws Exception {
@@ -93,6 +97,10 @@ public class DashboardServiceImpl implements DashboardService {
         
         for(Dashboard d : dashboardList) {
         	
+        	if(!d.getStatus().equalsIgnoreCase("A")) {
+        		continue;
+        	}
+        	
         	DashboardCustomResponse response = new DashboardCustomResponse();
         	response.setDashBrdId(d.getId());
         	
@@ -114,11 +122,11 @@ public class DashboardServiceImpl implements DashboardService {
         		
         	} else if(d.getType().equalsIgnoreCase("RAW")) {
         		
-//        		GoalResponse gRes = goalService.getGoalById(d.getGoalId());
-//        		response.setAmount(gRes.getTarget());
-//        		response.setPercentage(gRes.getProgressPercentage());
-//        		response.setTitle(gRes.getGoalTitle());
-//        		response.setType("RAW");
+        		RawMaterialResponse rRes = rawMaterialService.getRawMaterialsById(d.getRawMaterialId());
+        		response.setRawMatAvailability(rRes.getAvailability());
+        		response.setRemainingStock(rRes.getRemainingStock());
+        		response.setTitle(rRes.getName());
+        		response.setType("RAW");
         	}
         	
         	dash.add(response);
