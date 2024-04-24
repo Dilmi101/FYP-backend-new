@@ -218,7 +218,7 @@ public class GoalServiceImpl implements GoalService {
 
             for(Goal goal : goals){
             	
-            	if(!goal.getGoalStatus().equalsIgnoreCase("A")) {
+            	if(!goal.getGoalStatus().equalsIgnoreCase("A") || !goal.getGoalStatus().equalsIgnoreCase("C")) {
             		continue;
             	}
             	
