@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -283,8 +284,13 @@ public class GoalServiceImpl implements GoalService {
                     double target = Double.parseDouble(goal.getTarget());
                     double percentage = (sum / target) * 100;
                     double remaining = target - sum;
+                    
+                    if(remaining < 0) {
+                    	goalResponse.setPendingTarget(String.valueOf(0));
+                    } else {
+                    	goalResponse.setPendingTarget(String.valueOf(remaining));
+                    }
 
-                    goalResponse.setPendingTarget(String.valueOf(remaining));
                     goalResponse.setProgressPercentage(String.valueOf(Math.round(percentage)));
                 }
                 else{
@@ -343,8 +349,13 @@ public class GoalServiceImpl implements GoalService {
 
                 double target = Double.parseDouble(goal.getTarget());
                 double remaining = target - sum;
+                
+                if(remaining < 0) {
+                	goalResponse.setPendingTarget(String.valueOf(0));
+                } else {
+                	goalResponse.setPendingTarget(String.valueOf(remaining));
+                }
 
-                goalResponse.setPendingTarget(String.valueOf(remaining));
                 goalResponse.setGoalRecords(records);
             }
             else{

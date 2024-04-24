@@ -126,6 +126,7 @@ public class DashboardServiceImpl implements DashboardService {
         		response.setAmount(gRes.getTarget());
         		response.setPercentage(gRes.getProgressPercentage());
         		response.setTitle(gRes.getGoalTitle());
+        		response.setUnit(gRes.getUnit());
         		response.setType("GOAL");
         		
         	} else if(d.getType().equalsIgnoreCase("RAW")) {
