@@ -223,7 +223,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         
         for(Expense e: expenses) {
         	
-        	if(!e.getExpenseStatus().equalsIgnoreCase("A") || !e.getExpenseStatus().equalsIgnoreCase("C")) {
+        	if(!e.getExpenseStatus().equalsIgnoreCase("A") && !e.getExpenseStatus().equalsIgnoreCase("C")) {
         		continue;
         	}
         	
