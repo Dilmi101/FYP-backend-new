@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.fyp.ehb.domain.Customer;
+import com.fyp.ehb.domain.Dashboard;
 import com.fyp.ehb.domain.Expense;
 import com.fyp.ehb.domain.RawMaterial;
 import com.fyp.ehb.domain.RawMaterialHistory;
@@ -168,6 +169,11 @@ public class RawMaterialServiceImpl implements RawMaterialService {
         		availability = "Y";
         	}
         	
+            Query query2 = new Query();
+            query2.addCriteria(Criteria.where("rawMaterialId").is(r.getId()));
+            query2.addCriteria(Criteria.where("status").is("A"));
+            Dashboard isDashboardItem =  mongoTemplate.findOne(query2, Dashboard.class);
+        	
         	RawMaterialResponse response = new RawMaterialResponse();
         	response.setAvailability(availability);
         	response.setName(r.getName());
@@ -178,6 +184,12 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 			response.setSupplierEmail(r.getSupplierEmail());
 			response.setSupplierName(r.getSupplierName());
 			response.setUnit(r.getUnit());
+			
+        	if(isDashboardItem != null && isDashboardItem.getStatus().equalsIgnoreCase("A")) {
+        		response.setIsDashboardItem("Y");
+        	} else {
+        		response.setIsDashboardItem("N");
+        	}
         	
         	rawMaterialList.add(response);
         	

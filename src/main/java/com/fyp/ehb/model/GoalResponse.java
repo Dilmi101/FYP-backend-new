@@ -26,5 +26,6 @@ public class GoalResponse {
     private String remainingDays;
     private String progressPercentage;
     private String pendingTarget;
+    private String isDashboardItem;
     private List<GoalHistory> goalRecords;
 }

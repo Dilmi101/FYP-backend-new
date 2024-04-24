@@ -22,5 +22,6 @@ public class RawMaterialResponse {
 	private String reminder;
 	private String supplierName;
 	private String supplierEmail;
+	private String isDashboardItem;
 	private List<RawMaterialHistoryMain> rawHistoryList;
 }

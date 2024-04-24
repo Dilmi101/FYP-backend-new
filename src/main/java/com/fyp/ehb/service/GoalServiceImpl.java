@@ -1,6 +1,7 @@
 package com.fyp.ehb.service;
 
 import com.fyp.ehb.domain.Customer;
+import com.fyp.ehb.domain.Dashboard;
 import com.fyp.ehb.domain.Goal;
 import com.fyp.ehb.domain.GoalHistory;
 import com.fyp.ehb.enums.EmpowerHerBizError;
@@ -221,6 +222,11 @@ public class GoalServiceImpl implements GoalService {
             		continue;
             	}
             	
+                Query query2 = new Query();
+                query2.addCriteria(Criteria.where("goalId").is(goal.getId()));
+                query2.addCriteria(Criteria.where("status").is("A"));
+                Dashboard isDashboardItem =  mongoTemplate.findOne(query2, Dashboard.class);
+                
                 GoalResponse goalResponse = new GoalResponse();
 
                 goalResponse.setId(goal.getId());
@@ -234,6 +240,12 @@ public class GoalServiceImpl implements GoalService {
                 goalResponse.setReminder(goal.getReminder());
                 goalResponse.setGoalStatus(goal.getGoalStatus());
                 goalResponse.setIsRecurringGoal(goal.getIsRecurringGoal());
+                
+            	if(isDashboardItem != null && isDashboardItem.getStatus().equalsIgnoreCase("A")) {
+            		goalResponse.setIsDashboardItem("Y");
+            	} else {
+            		goalResponse.setIsDashboardItem("N");
+            	}
 
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -269,14 +281,17 @@ public class GoalServiceImpl implements GoalService {
                     }
 
                     double target = Double.parseDouble(goal.getTarget());
-
                     double percentage = (sum / target) * 100;
+                    double remaining = target - sum;
 
+                    goalResponse.setPendingTarget(String.valueOf(remaining));
                     goalResponse.setProgressPercentage(String.valueOf(Math.round(percentage)));
                 }
                 else{
                     goalResponse.setProgressPercentage("0");
+                    goalResponse.setPendingTarget(goal.getTarget());
                 }
+                
 
                 goalResponses.add(goalResponse);
             }

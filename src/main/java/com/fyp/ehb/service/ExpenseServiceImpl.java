@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fyp.ehb.domain.Customer;
+import com.fyp.ehb.domain.Dashboard;
 import com.fyp.ehb.domain.Expense;
 import com.fyp.ehb.domain.ExpenseHistory;
 import com.fyp.ehb.domain.Goal;
@@ -226,6 +227,11 @@ public class ExpenseServiceImpl implements ExpenseService {
         		continue;
         	}
         	
+            Query query2 = new Query();
+            query2.addCriteria(Criteria.where("expenseId").is(e.getId()));
+            query2.addCriteria(Criteria.where("status").is("A"));
+            Dashboard isDashboardItem =  mongoTemplate.findOne(query2, Dashboard.class);
+        	
     		Date stdate = e.getStartDate();  
     		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
     		String sd = dtFormat.format(stdate);
@@ -248,6 +254,12 @@ public class ExpenseServiceImpl implements ExpenseService {
         	expense.setId(e.getId());
         	expense.setReminder(e.getReminder());
         	expense.setStartDate(sd);
+        	
+        	if(isDashboardItem != null && isDashboardItem.getStatus().equalsIgnoreCase("A")) {
+        		expense.setIsDashboardItem("Y");
+        	} else {
+        		expense.setIsDashboardItem("N");
+        	}
         	        	
         	Instant currentDate = Instant.now();
         	Instant endD = e.getEndDate().toInstant();
