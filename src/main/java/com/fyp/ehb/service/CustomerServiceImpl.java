@@ -74,7 +74,7 @@ public class CustomerServiceImpl implements CustomerService {
     
 	@Override
 	@Transactional
-	public CustomerResponse login(String username, String password) throws EmpowerHerBizException {
+	public CustomerResponse login(String username, String password, String pushToken) throws EmpowerHerBizException {
 
 		if(username == null || username.isEmpty()) {
 			throw new EmpowerHerBizException(EmpowerHerBizError.INVALID_USERNAME);
@@ -97,6 +97,9 @@ public class CustomerServiceImpl implements CustomerService {
         if(!customer.getPassword().equalsIgnoreCase(hashedPwd)) {
         	throw new EmpowerHerBizException(EmpowerHerBizError.INVALID_PASSWORD);
         }
+        
+        customer.setPushToken(pushToken);
+        customerDao.save(customer);
         
         CustomerResponse response = new CustomerResponse();
         response.setEmail(customer.getEmail());

@@ -63,7 +63,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		rawMaterial.setCustomer(customer.get());
 		rawMaterial.setLowStockLvl(String.valueOf(addRawMaterialRequest.getLowStockLevel()));
 		rawMaterial.setName(addRawMaterialRequest.getRawMaterialName());
-		rawMaterial.setRemainingStock(String.valueOf(addRawMaterialRequest.getLowStockLevel()));
+		rawMaterial.setRemainingStock(String.valueOf(addRawMaterialRequest.getStockRemaining()));
 		rawMaterial.setReminder(addRawMaterialRequest.getReminder());
 		rawMaterial.setSupplierEmail(addRawMaterialRequest.getSupplierEmailAddress());
 		rawMaterial.setSupplierName(addRawMaterialRequest.getSupplierName());

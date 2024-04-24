@@ -39,7 +39,7 @@ public class CustomerController {
 			@RequestParam(value="pushToken", required=false) String pushToken
 			) throws EmpowerHerBizException {
 
-		CustomerResponse customerResp = customerService.login(username, password);
+		CustomerResponse customerResp = customerService.login(username, password, pushToken);
 
 		MainResponse mainResponse = new MainResponse();
 		mainResponse.setResponseCode("000");
