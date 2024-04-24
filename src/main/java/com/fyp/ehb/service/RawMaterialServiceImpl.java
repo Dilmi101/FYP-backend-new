@@ -300,6 +300,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				response.setSupplierEmail(raw.getSupplierEmail());
 				response.setSupplierName(raw.getSupplierName());
 				response.setUnit(raw.getUnit());
+				response.setStatus(raw.getStatus());
 			}
 		}
 		return response;

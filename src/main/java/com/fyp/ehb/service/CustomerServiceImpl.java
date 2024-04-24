@@ -16,6 +16,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fyp.ehb.model.CustomerResponse;
 import com.fyp.ehb.model.ForgotPwdRequest;
 
@@ -71,6 +73,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
     
 	@Override
+	@Transactional
 	public CustomerResponse login(String username, String password) throws EmpowerHerBizException {
 
 		if(username == null || username.isEmpty()) {
@@ -103,6 +106,7 @@ public class CustomerServiceImpl implements CustomerService {
         response.setNic(customer.getNic());
         response.setUsername(customer.getUsername());
         response.setBusiness(customer.getBusiness());
+        response.setPushToken(customer.getPushToken());
 
         return response;
 		

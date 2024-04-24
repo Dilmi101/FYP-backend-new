@@ -23,5 +23,6 @@ public class RawMaterialResponse {
 	private String supplierName;
 	private String supplierEmail;
 	private String isDashboardItem;
+	private String status;
 	private List<RawMaterialHistoryMain> rawHistoryList;
 }

@@ -107,6 +107,10 @@ public class DashboardServiceImpl implements DashboardService {
         	if(d.getType().equalsIgnoreCase("EXPENSE")) {
         		
         		ExpenseResponse exRes = expenseService.getExpenseById(d.getExpenseId());
+        		
+        		if(exRes.getExpenseStatus() != null && !exRes.getExpenseStatus().equalsIgnoreCase("A")) {
+        			continue;
+        		}
         		response.setAmount(exRes.getAmount());
         		response.setPercentage(exRes.getProgrssPercentage());
         		response.setTitle(exRes.getExpenseTitle());
@@ -115,6 +119,10 @@ public class DashboardServiceImpl implements DashboardService {
         	} else if(d.getType().equalsIgnoreCase("GOAL")) {
         		
         		GoalResponse gRes = goalService.getGoalById(d.getGoalId());
+        		
+        		if(gRes.getGoalStatus() != null && !gRes.getGoalStatus().equalsIgnoreCase("A")) {
+        			continue;
+        		}
         		response.setAmount(gRes.getTarget());
         		response.setPercentage(gRes.getProgressPercentage());
         		response.setTitle(gRes.getGoalTitle());
@@ -123,6 +131,10 @@ public class DashboardServiceImpl implements DashboardService {
         	} else if(d.getType().equalsIgnoreCase("RAW")) {
         		
         		RawMaterialResponse rRes = rawMaterialService.getRawMaterialsById(d.getRawMaterialId());
+        		
+        		if(rRes.getStatus() != null && !rRes.getStatus().equalsIgnoreCase("A")) {
+        			continue;
+        		}
         		response.setRawMatAvailability(rRes.getAvailability());
         		response.setRemainingStock(rRes.getRemainingStock());
         		response.setTitle(rRes.getName());
