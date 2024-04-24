@@ -2,6 +2,8 @@ package com.fyp.ehb.service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -15,6 +17,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -41,6 +44,7 @@ import com.fyp.ehb.model.GoalResponse;
 import com.fyp.ehb.repository.CustomerDao;
 import com.fyp.ehb.repository.ExpenseDao;
 import com.fyp.ehb.repository.ExpenseHistoryDao;
+import com.fyp.ehb.util.EhbUtil;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -69,9 +73,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 		Customer cust = customer.get();
 		
 	    String sDate = addExpenseRequest.getStartDate();  
-	    Date startDate = new Date();
+	    Date startDate = null;
 		try {
-			startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(sDate);
+			startDate = EhbUtil.dateFromString(sDate, "yyyy-MM-dd HH:mm:ss");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -79,13 +83,15 @@ public class ExpenseServiceImpl implements ExpenseService {
 	    String eDate = addExpenseRequest.getEndDate();  
 	    Date endDate = new Date();
 		try {
-			endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(eDate);
+			endDate = EhbUtil.dateFromString(eDate, "yyyy-MM-dd HH:mm:ss");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 	    
+		String formattedAmout = formatCurrencyDecimalPoints(addExpenseRequest.getAmount());
+		
 		Expense expense = new Expense();
-		expense.setAmount(addExpenseRequest.getAmount());
+		expense.setAmount(formattedAmout);
 		expense.setEndDate(endDate);
 		expense.setExpenseCategory(addExpenseRequest.getExpenseCategory());
 		expense.setExpenseDescription(addExpenseRequest.getExpenseDescription());
@@ -130,7 +136,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		    String sDate = addExpenseRequest.getStartDate();  
 		    Date startDate = new Date();
 			try {
-				startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(sDate);
+				startDate = EhbUtil.dateFromString(sDate, "yyyy-MM-dd HH:mm:ss");
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -138,12 +144,14 @@ public class ExpenseServiceImpl implements ExpenseService {
 		    String eDate = addExpenseRequest.getEndDate();  
 		    Date endDate = new Date();
 			try {
-				endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd").parse(eDate);
+				endDate = EhbUtil.dateFromString(eDate, "yyyy-MM-dd HH:mm:ss");
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			
-			existingEx.setAmount(addExpenseRequest.getAmount());
+			String formattedAmout = formatCurrencyDecimalPoints(addExpenseRequest.getAmount());
+			
+			existingEx.setAmount(formattedAmout);
 			existingEx.setEndDate(endDate);
 			existingEx.setExpenseCategory(addExpenseRequest.getExpenseCategory());
 			existingEx.setExpenseDescription(addExpenseRequest.getExpenseDescription());
@@ -219,15 +227,17 @@ public class ExpenseServiceImpl implements ExpenseService {
         	}
         	
     		Date stdate = e.getStartDate();  
-    		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+    		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
     		String sd = dtFormat.format(stdate);
     		
     		Date endate = e.getEndDate();  
-    		SimpleDateFormat edtFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+    		SimpleDateFormat edtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
     		String ed = edtFormat.format(endate); 
+    		
+    		String formattedAmout = formatCurrencyDecimalPoints(e.getAmount());
         	
         	ExpenseResponse expense = new ExpenseResponse();
-        	expense.setAmount(e.getAmount());
+        	expense.setAmount(formattedAmout);
         	expense.setCustomer(customer.get().getId());
         	expense.setDuration(e.getDuration());
         	expense.setEndDate(ed);
@@ -264,7 +274,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 MathContext mc = new MathContext(3);
                 BigDecimal target = new BigDecimal(e.getAmount());
                 BigDecimal remaining = target.subtract(sum);//target - sum;
-                BigDecimal percentage = sum.divide(target).multiply(new BigDecimal(100)).round(mc);
+                BigDecimal percentage = sum.divide(target, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
 
                 expense.setProgrssPercentage(percentage.toString());
                 expense.setPendingTarget(String.valueOf(remaining));
@@ -297,11 +307,11 @@ public class ExpenseServiceImpl implements ExpenseService {
 		Expense existingExpense = expense.get();
 		
 		Date startDate = existingExpense.getStartDate();  
-		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		String strDate = dateFormat1.format(startDate);  
 		
-		Date endDate = existingExpense.getStartDate();  
-		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+		Date endDate = existingExpense.getEndDate();  
+		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		String eDate = dateFormat2.format(endDate);  
 		
 		response.setAmount(existingExpense.getAmount());
@@ -329,7 +339,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 sum = sum.add(achieved);
                 
         		Date expCreatedD = record.getCreatedDate();  
-        		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+        		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
         		String exD = dtFormat.format(expCreatedD); 
         		
                 ExpenseHistoryMain exmainRes = new ExpenseHistoryMain();
@@ -356,7 +366,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             MathContext mc = new MathContext(3);
             BigDecimal target = new BigDecimal(existingExpense.getAmount());
             BigDecimal remaining = target.subtract(sum);//target - sum;
-            BigDecimal percentage = sum.divide(target).multiply(new BigDecimal(100)).round(mc);
+            BigDecimal percentage = sum.divide(target, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
 
             response.setProgrssPercentage(percentage.toString());
             response.setPendingTarget(String.valueOf(remaining));
@@ -419,11 +429,11 @@ public class ExpenseServiceImpl implements ExpenseService {
         		ExpenseResponse expenseResponse = new ExpenseResponse();
         		        		
         		Date sd = e.getStartDate();  
-        		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+        		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
         		String strDate = dateFormat1.format(sd);  
         		
         		Date endD = e.getStartDate();  
-        		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");  
+        		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
         		String ed = dateFormat2.format(endD);  
         		
         		expenseResponse.setAmount(e.getAmount());
@@ -463,7 +473,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                     MathContext mc = new MathContext(3);
                     BigDecimal target = new BigDecimal(e.getAmount());
                     BigDecimal remaining = target.subtract(sum);//target - sum;
-                    BigDecimal percentage = sum.divide(target).multiply(new BigDecimal(100)).round(mc);
+                    BigDecimal percentage = sum.divide(target, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
 
                     expenseResponse.setProgrssPercentage(percentage.toString());
                     expenseResponse.setPendingTarget(String.valueOf(remaining));
@@ -551,4 +561,15 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	}
 
+	public static synchronized String formatCurrencyDecimalPoints(String value){
+		
+		try {
+			DecimalFormat df = new DecimalFormat("0.00");
+			return df.format(Double.parseDouble(value));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return value;
+		}
+	}
+	
 }

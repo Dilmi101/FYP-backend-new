@@ -184,8 +184,6 @@ public class GoalServiceImpl implements GoalService {
         if (goal.isPresent()) {
 
             Goal goalCurrent = goal.get();
-
-            goalCurrent.setId(goalId);
             goalCurrent.setGoalStatus(Status.INACTIVE_STATUS.getStatus());
 
             Goal updatedGoal = goalDao.save(goalCurrent);
