@@ -349,6 +349,7 @@ public class GoalServiceImpl implements GoalService {
 
                 double target = Double.parseDouble(goal.getTarget());
                 double remaining = target - sum;
+                double percentage = (sum / target) * 100;
                 
                 if(remaining < 0) {
                 	goalResponse.setPendingTarget(String.valueOf(0));
@@ -356,6 +357,7 @@ public class GoalServiceImpl implements GoalService {
                 	goalResponse.setPendingTarget(String.valueOf(remaining));
                 }
 
+                goalResponse.setProgressPercentage(String.valueOf(Math.round(percentage)));
                 goalResponse.setGoalRecords(records);
             }
             else{
