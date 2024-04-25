@@ -266,11 +266,17 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		RawMaterialResponse response = new RawMaterialResponse();
 		List<RawMaterialHistoryMain> rawHistoryList = new ArrayList<>();
 		
+    	String availability = "N";
+		
 		Optional<RawMaterial> existingRawMaterial = rawMaterialDao.findById(rawMaterialId);
 		
 		if(existingRawMaterial.isPresent()) {
 			
 			RawMaterial raw = existingRawMaterial.get();
+	    	
+	    	if(Integer.parseInt(raw.getRemainingStock()) > 0) {
+	    		availability = "Y";
+	    	}
 			
 			List<RawMaterialHistory> history = rawMaterialHistoryDao.getRawMaterialsById(rawMaterialId);
 			
@@ -290,7 +296,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 					
 				}
 				
-				response.setAvailability(raw.getAvailability());
+				response.setAvailability(availability);
 				response.setName(raw.getName());
 				response.setRawMateId(raw.getId());
 				response.setRemainingStock(raw.getRemainingStock());
@@ -303,7 +309,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				
 			} else {
 				response.setRawHistoryList(rawHistoryList);
-				response.setAvailability(raw.getAvailability());
+				response.setAvailability(availability);
 				response.setName(raw.getName());
 				response.setRawMateId(raw.getId());
 				response.setRemainingStock(raw.getRemainingStock());

@@ -415,6 +415,9 @@ public class GoalServiceImpl implements GoalService {
                     }
 
                     double target = Double.parseDouble(goal.get().getTarget());
+                    double percentage = (sum / target) * 100;
+                    
+                 //   if(percentage >= 100)
 
                     if(sum >= target){
                         hm.put("isAchieved", Status.YES_STATUS.getStatus());
