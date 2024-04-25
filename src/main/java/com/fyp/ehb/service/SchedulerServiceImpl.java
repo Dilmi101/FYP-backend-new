@@ -170,7 +170,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 						PushNotificationDataRequest notificationDataRequest = new PushNotificationDataRequest();
 						notificationDataRequest.setTitle("Keep Going!");
-						notificationDataRequest.setBody("Just a quick to reminder record your expenses - " + rawMaterial.getName());
+						notificationDataRequest.setBody("Just a quick reminder to update your - " + rawMaterial.getName());
 
 						PushNotificationRequest notificationRequest = new PushNotificationRequest();
 						notificationRequest.setTo(rawMaterial.getCustomer().getPushToken());
