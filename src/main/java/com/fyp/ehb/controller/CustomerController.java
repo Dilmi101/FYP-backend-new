@@ -35,10 +35,11 @@ public class CustomerController {
 	@GetMapping(value="/login")
 	public MainResponse login(
 			@RequestParam(value="username", required=true) String username,
-			@RequestParam(value="password", required=true) String password
+			@RequestParam(value="password", required=true) String password,
+			@RequestParam(value="pushToken", required=false) String pushToken
 			) throws EmpowerHerBizException {
 
-		CustomerResponse customerResp = customerService.login(username, password);
+		CustomerResponse customerResp = customerService.login(username, password, pushToken);
 
 		MainResponse mainResponse = new MainResponse();
 		mainResponse.setResponseCode("000");

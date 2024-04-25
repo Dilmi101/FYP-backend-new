@@ -8,7 +8,7 @@ import com.fyp.ehb.model.ForgotPwdRequest;
 
 public interface CustomerService {
     public Customer registerCustomer(SignupRequest signupRequest) throws EmpowerHerBizException;
-	public CustomerResponse login(String username, String password) throws EmpowerHerBizException;
+	public CustomerResponse login(String username, String password, String pushToken) throws EmpowerHerBizException;
 
     public CustomerResponse updateCustomerProfile(String customerId, CustomerResponse customerResponse) throws EmpowerHerBizException;
 	public CustomerResponse forgotPwd(ForgotPwdRequest forgotPwdRequest) throws Exception;

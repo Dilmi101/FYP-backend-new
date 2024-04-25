@@ -16,4 +16,5 @@ public class CustomerResponse {
 	private String nic;
 	private String mobileNo;
 	private Business business;
+	private String pushToken;
 }

@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.fyp.ehb.domain.Customer;
+import com.fyp.ehb.domain.Dashboard;
 import com.fyp.ehb.domain.Expense;
 import com.fyp.ehb.domain.RawMaterial;
 import com.fyp.ehb.domain.RawMaterialHistory;
@@ -62,7 +63,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		rawMaterial.setCustomer(customer.get());
 		rawMaterial.setLowStockLvl(String.valueOf(addRawMaterialRequest.getLowStockLevel()));
 		rawMaterial.setName(addRawMaterialRequest.getRawMaterialName());
-		rawMaterial.setRemainingStock(String.valueOf(addRawMaterialRequest.getLowStockLevel()));
+		rawMaterial.setRemainingStock(String.valueOf(addRawMaterialRequest.getStockRemaining()));
 		rawMaterial.setReminder(addRawMaterialRequest.getReminder());
 		rawMaterial.setSupplierEmail(addRawMaterialRequest.getSupplierEmailAddress());
 		rawMaterial.setSupplierName(addRawMaterialRequest.getSupplierName());
@@ -168,6 +169,11 @@ public class RawMaterialServiceImpl implements RawMaterialService {
         		availability = "Y";
         	}
         	
+            Query query2 = new Query();
+            query2.addCriteria(Criteria.where("rawMaterialId").is(r.getId()));
+            query2.addCriteria(Criteria.where("status").is("A"));
+            Dashboard isDashboardItem =  mongoTemplate.findOne(query2, Dashboard.class);
+        	
         	RawMaterialResponse response = new RawMaterialResponse();
         	response.setAvailability(availability);
         	response.setName(r.getName());
@@ -178,6 +184,12 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 			response.setSupplierEmail(r.getSupplierEmail());
 			response.setSupplierName(r.getSupplierName());
 			response.setUnit(r.getUnit());
+			
+        	if(isDashboardItem != null && isDashboardItem.getStatus().equalsIgnoreCase("A")) {
+        		response.setIsDashboardItem("Y");
+        	} else {
+        		response.setIsDashboardItem("N");
+        	}
         	
         	rawMaterialList.add(response);
         	
@@ -254,11 +266,17 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		RawMaterialResponse response = new RawMaterialResponse();
 		List<RawMaterialHistoryMain> rawHistoryList = new ArrayList<>();
 		
+    	String availability = "N";
+		
 		Optional<RawMaterial> existingRawMaterial = rawMaterialDao.findById(rawMaterialId);
 		
 		if(existingRawMaterial.isPresent()) {
 			
 			RawMaterial raw = existingRawMaterial.get();
+	    	
+	    	if(Integer.parseInt(raw.getRemainingStock()) > 0) {
+	    		availability = "Y";
+	    	}
 			
 			List<RawMaterialHistory> history = rawMaterialHistoryDao.getRawMaterialsById(rawMaterialId);
 			
@@ -278,8 +296,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 					
 				}
 				
-				response.setRawHistoryList(rawHistoryList);
-				response.setAvailability(raw.getAvailability());
+				response.setAvailability(availability);
 				response.setName(raw.getName());
 				response.setRawMateId(raw.getId());
 				response.setRemainingStock(raw.getRemainingStock());
@@ -288,6 +305,20 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				response.setSupplierEmail(raw.getSupplierEmail());
 				response.setSupplierName(raw.getSupplierName());
 				response.setUnit(raw.getUnit());
+				response.setStatus(raw.getStatus());
+				
+			} else {
+				response.setRawHistoryList(rawHistoryList);
+				response.setAvailability(availability);
+				response.setName(raw.getName());
+				response.setRawMateId(raw.getId());
+				response.setRemainingStock(raw.getRemainingStock());
+				response.setLowStockLvl(raw.getLowStockLvl());
+				response.setReminder(raw.getReminder());
+				response.setSupplierEmail(raw.getSupplierEmail());
+				response.setSupplierName(raw.getSupplierName());
+				response.setUnit(raw.getUnit());
+				response.setStatus(raw.getStatus());
 			}
 		}
 		return response;

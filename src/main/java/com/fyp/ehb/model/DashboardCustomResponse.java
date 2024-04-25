@@ -15,4 +15,5 @@ public class DashboardCustomResponse {
 	private String dashBrdId;
 	private String rawMatAvailability;
 	private String remainingStock;
+	private String unit;
 }

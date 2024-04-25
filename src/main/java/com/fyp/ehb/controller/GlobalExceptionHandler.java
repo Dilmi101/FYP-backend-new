@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fyp.ehb.exception.EmpowerHerBizException;
 import com.fyp.ehb.model.EmpowerHerBizErrorResponse;
+import com.fyp.ehb.model.MainResponse;
 
 
 @ControllerAdvice
@@ -22,7 +23,7 @@ public class GlobalExceptionHandler {
 	Log logger = LogFactory.getLog(GlobalExceptionHandler.class);
 
 	@ExceptionHandler(value = EmpowerHerBizException.class)
-	public ResponseEntity<EmpowerHerBizErrorResponse> handleException(EmpowerHerBizException error) {
+	public ResponseEntity<MainResponse> handleException(EmpowerHerBizException error) {
 		
 		StringWriter stack = new StringWriter();
 		error.printStackTrace(new PrintWriter(stack));
@@ -40,7 +41,11 @@ public class GlobalExceptionHandler {
 		empError.setErrorCode(error.getErrorCode());
 		empError.setErrorMessage(error.getErrorMessage());
 		
-		return new ResponseEntity<EmpowerHerBizErrorResponse>(empError , HttpStatus.BAD_REQUEST);
+		MainResponse mainResponse = new MainResponse();
+		mainResponse.setResponseCode("999");
+		mainResponse.setResponseObject(empError);
+		
+		return new ResponseEntity<MainResponse>(mainResponse , HttpStatus.BAD_REQUEST);
 		
 	}
 }

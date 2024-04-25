@@ -25,7 +25,8 @@ public enum EmpowerHerBizError {
 	REACHED_TARGET_EXPENSE("19", "You have exceeded your budget for this expense.", HttpStatus.BAD_REQUEST),
 	INVALID_MOBILE("20", "No customer can be found for this mobile number. Please re-check.", HttpStatus.BAD_REQUEST),
 	PWD_UPDATE_FAILED("21", "Password update failed.", HttpStatus.BAD_REQUEST),
-	CUSTOMER_DETAILS_UPDATE_FAILED("22", "Customer details update failed.", HttpStatus.BAD_REQUEST);
+	CUSTOMER_DETAILS_UPDATE_FAILED("22", "Customer details update failed.", HttpStatus.BAD_REQUEST),
+	GOAL_TARGET_REACHED("23", "You have already reached your goal target.", HttpStatus.BAD_REQUEST);
 
 	private String errorCode;
 	private String errorMessage;

@@ -1,6 +1,7 @@
 package com.fyp.ehb.service;
 
 import com.fyp.ehb.domain.Customer;
+import com.fyp.ehb.domain.Dashboard;
 import com.fyp.ehb.domain.Goal;
 import com.fyp.ehb.domain.GoalHistory;
 import com.fyp.ehb.enums.EmpowerHerBizError;
@@ -18,6 +19,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -217,10 +219,15 @@ public class GoalServiceImpl implements GoalService {
 
             for(Goal goal : goals){
             	
-            	if(!goal.getGoalStatus().equalsIgnoreCase("A")) {
+            	if(!goal.getGoalStatus().equalsIgnoreCase("A") && !goal.getGoalStatus().equalsIgnoreCase("C")) {
             		continue;
             	}
             	
+                Query query2 = new Query();
+                query2.addCriteria(Criteria.where("goalId").is(goal.getId()));
+                query2.addCriteria(Criteria.where("status").is("A"));
+                Dashboard isDashboardItem =  mongoTemplate.findOne(query2, Dashboard.class);
+                
                 GoalResponse goalResponse = new GoalResponse();
 
                 goalResponse.setId(goal.getId());
@@ -234,6 +241,12 @@ public class GoalServiceImpl implements GoalService {
                 goalResponse.setReminder(goal.getReminder());
                 goalResponse.setGoalStatus(goal.getGoalStatus());
                 goalResponse.setIsRecurringGoal(goal.getIsRecurringGoal());
+                
+            	if(isDashboardItem != null && isDashboardItem.getStatus().equalsIgnoreCase("A")) {
+            		goalResponse.setIsDashboardItem("Y");
+            	} else {
+            		goalResponse.setIsDashboardItem("N");
+            	}
 
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -269,14 +282,22 @@ public class GoalServiceImpl implements GoalService {
                     }
 
                     double target = Double.parseDouble(goal.getTarget());
-
                     double percentage = (sum / target) * 100;
+                    double remaining = target - sum;
+                    
+                    if(remaining < 0) {
+                    	goalResponse.setPendingTarget(String.valueOf(0));
+                    } else {
+                    	goalResponse.setPendingTarget(String.valueOf(remaining));
+                    }
 
                     goalResponse.setProgressPercentage(String.valueOf(Math.round(percentage)));
                 }
                 else{
                     goalResponse.setProgressPercentage("0");
+                    goalResponse.setPendingTarget(goal.getTarget());
                 }
+                
 
                 goalResponses.add(goalResponse);
             }
@@ -328,8 +349,15 @@ public class GoalServiceImpl implements GoalService {
 
                 double target = Double.parseDouble(goal.getTarget());
                 double remaining = target - sum;
+                double percentage = (sum / target) * 100;
+                
+                if(remaining < 0) {
+                	goalResponse.setPendingTarget(String.valueOf(0));
+                } else {
+                	goalResponse.setPendingTarget(String.valueOf(remaining));
+                }
 
-                goalResponse.setPendingTarget(String.valueOf(remaining));
+                goalResponse.setProgressPercentage(String.valueOf(Math.round(percentage)));
                 goalResponse.setGoalRecords(records);
             }
             else{
@@ -387,6 +415,11 @@ public class GoalServiceImpl implements GoalService {
                     }
 
                     double target = Double.parseDouble(goal.get().getTarget());
+                    double percentage = (sum / target) * 100;
+                    
+                    if(percentage >= 100) {
+                    	throw new EmpowerHerBizException(EmpowerHerBizError.GOAL_TARGET_REACHED);
+                    }
 
                     if(sum >= target){
                         hm.put("isAchieved", Status.YES_STATUS.getStatus());
