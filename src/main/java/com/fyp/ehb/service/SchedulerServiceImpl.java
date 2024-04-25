@@ -6,6 +6,7 @@ import java.util.*;
 import com.fyp.ehb.domain.Expense;
 import com.fyp.ehb.domain.RawMaterial;
 import com.fyp.ehb.enums.ReminderFrequency;
+import com.fyp.ehb.model.ExpenseResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -291,6 +292,47 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 			goalDao.save(goal);
 		}
+	}
+
+	@Override
+	public List<ExpenseResponse> expenseReminderListGet() throws Exception {
+
+		logger.info("starting expenses reminder scheduler....");
+
+		Calendar calendarEndDate = Calendar.getInstance();
+		calendarEndDate.setTime(new Date());
+
+		calendarEndDate.set(Calendar.HOUR, 00);
+		calendarEndDate.set(Calendar.MINUTE, 00);
+		calendarEndDate.set(Calendar.AM_PM, 0);
+		calendarEndDate.set(Calendar.SECOND, 0);
+
+		Date endDate = calendarEndDate.getTime();
+
+		Query query = new Query();
+		Criteria c = new Criteria().andOperator(Criteria.where("endDate").lte(endDate));
+		query.addCriteria(c);
+
+		List<Expense> expenses = mongoTemplate.find(query, Expense.class);
+
+		List<ExpenseResponse> response = new ArrayList<>();
+
+		if(expenses != null && !expenses.isEmpty()){
+
+			for(Expense expense : expenses){
+
+				ExpenseResponse expenseResponse = new ExpenseResponse();
+				expenseResponse.setId(expense.getId());
+				expenseResponse.setExpenseTitle(expense.getExpenseTitle());
+
+				response.add(expenseResponse);
+			}
+		}
+		else{
+			logger.info("No expenses found for reminder");
+		}
+
+		return response;
 	}
 
 }
