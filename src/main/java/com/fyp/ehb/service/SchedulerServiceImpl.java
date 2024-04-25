@@ -2,11 +2,13 @@ package com.fyp.ehb.service;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.Future;
 
 import com.fyp.ehb.domain.Expense;
 import com.fyp.ehb.domain.RawMaterial;
 import com.fyp.ehb.enums.ReminderFrequency;
 import com.fyp.ehb.model.ExpenseResponse;
+import com.fyp.ehb.model.firebase.NotificationResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,7 +142,10 @@ public class SchedulerServiceImpl implements SchedulerService{
 						notificationRequest.setTo(expense.getCustomer().getPushToken());
 						notificationRequest.setNotification(notificationDataRequest);
 
-						notificationService.sendPushNotification(notificationRequest);
+						Future<NotificationResponse> response = notificationService.sendPushNotification(notificationRequest);
+
+						logger.info("Expense Reminder Push Notification Response : " + response.get().getResponseEntity());
+						logger.info("Successfully send expense reminder for id " + expense.getId());
 					}
 				} catch (Exception e) {
 
