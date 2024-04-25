@@ -36,7 +36,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 	private GoalDao goalDao;
 
 	@Override
-	@Scheduled(cron = "${goal.reminder.cron}")
+//	@Scheduled(cron = "${goal.reminder.cron}")
 	public void goalReminder() throws Exception {
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -103,7 +103,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 
 	@Override
-	@Scheduled(cron = "${expense.reminder.cron}")
+//	@Scheduled(cron = "${expense.reminder.cron}")
 	public void expenseReminder() throws Exception {
 
 		logger.info("starting expenses reminder scheduler....");
@@ -152,7 +152,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 	}
 
 	@Override
-	@Scheduled(cron = "${rowmaterials.reminder.cron}")
+//	@Scheduled(cron = "${rowmaterials.reminder.cron}")
 	public void rowmaterialsReminder() throws Exception {
 
 		Query query = new Query();
@@ -189,7 +189,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 	}
 
 	@Override
-	@Scheduled(cron = "${reminde.unfinished.goal.status.cron}")
+//	@Scheduled(cron = "${reminde.unfinished.goal.status.cron}")
 	public void remindeUnfinishedGoalStatus() throws Exception {
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
