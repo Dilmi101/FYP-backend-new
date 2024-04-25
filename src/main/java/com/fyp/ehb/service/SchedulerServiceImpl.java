@@ -126,6 +126,8 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 		List<Expense> expenses =  mongoTemplate.find(query, Expense.class);
 
+		logger.info("Expenses list size : " + expenses.size());
+
 		if(expenses != null && !expenses.isEmpty()){
 
 			for (Expense expense : expenses){
@@ -152,6 +154,10 @@ public class SchedulerServiceImpl implements SchedulerService{
 					e.printStackTrace();
 				}
 			}
+		}
+		else{
+
+			logger.info("No expenses found for reminder....");
 		}
 		
 	}
