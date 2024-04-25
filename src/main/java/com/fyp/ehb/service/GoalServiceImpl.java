@@ -417,7 +417,9 @@ public class GoalServiceImpl implements GoalService {
                     double target = Double.parseDouble(goal.get().getTarget());
                     double percentage = (sum / target) * 100;
                     
-                 //   if(percentage >= 100)
+                    if(percentage >= 100) {
+                    	throw new EmpowerHerBizException(EmpowerHerBizError.GOAL_TARGET_REACHED);
+                    }
 
                     if(sum >= target){
                         hm.put("isAchieved", Status.YES_STATUS.getStatus());
