@@ -29,7 +29,7 @@ public class NotificationController {
         return mainResponse;
     }
 
-    @PostMapping(value="/remindeUnfinishedGoalStatus")
+    @PostMapping(value="/failedGoalNotification")
     public MainResponse remindeUnfinishedGoalStatus() throws Exception {
 
         schedulerService.remindeUnfinishedGoalStatus();
@@ -41,7 +41,7 @@ public class NotificationController {
         return mainResponse;
     }
 
-    @PostMapping(value="/rowmaterialsReminder")
+    @PostMapping(value="/rawmaterialsReminder")
     public MainResponse rowmaterialsReminder() throws Exception {
 
         schedulerService.rowmaterialsReminder();
