@@ -88,6 +88,15 @@ public class ExpenseServiceImpl implements ExpenseService {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+
+		String nextExecutionDate = "";
+		try{
+			SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			nextExecutionDate = outputDateFormat.format(sDate);
+
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 	    
 		String formattedAmout = formatCurrencyDecimalPoints(addExpenseRequest.getAmount());
 		
@@ -102,6 +111,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setStartDate(startDate);
 		expense.setCustomer(cust);
 		expense.setActualAmount("0");
+		expense.setNextExecutionDate(nextExecutionDate);
 		
 		expense = expenseDao.save(expense);
 		

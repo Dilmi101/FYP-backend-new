@@ -1,14 +1,18 @@
 package com.fyp.ehb.service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Future;
 
 import com.fyp.ehb.domain.Expense;
 import com.fyp.ehb.domain.RawMaterial;
+import com.fyp.ehb.enums.ExpenseReminderFrequency;
 import com.fyp.ehb.enums.ReminderFrequency;
 import com.fyp.ehb.model.ExpenseResponse;
 import com.fyp.ehb.model.firebase.NotificationResponse;
+import com.fyp.ehb.repository.ExpenseDao;
+import com.fyp.ehb.util.EhbUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +40,9 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 	@Autowired
 	private GoalDao goalDao;
+
+    @Autowired
+    private ExpenseDao expenseDao;
 
 	@Override
 //	@Scheduled(cron = "${goal.reminder.cron}")
@@ -110,6 +117,8 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 		logger.info("starting expenses reminder scheduler....");
 
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 		Calendar calendarEndDate = Calendar.getInstance();
 		calendarEndDate.setTime(new Date());
 
@@ -118,10 +127,13 @@ public class SchedulerServiceImpl implements SchedulerService{
 		calendarEndDate.set(Calendar.AM_PM, 0);
 		calendarEndDate.set(Calendar.SECOND, 0);
 
-		Date endDate = calendarEndDate.getTime();
+		Date fromdate = calendarEndDate.getTime();
+
+        Date fromDate = calendarEndDate.getTime();
+        String fromDateString = formatter.format(fromDate.getTime());
 
 		Query query = new Query();
-		Criteria c = new Criteria().andOperator(Criteria.where("endDate").lte(endDate));
+        Criteria c = new Criteria().andOperator(Criteria.where("nextExecutionDate").is(fromDateString), Criteria.where("expenseStatus").is("A"));
 		query.addCriteria(c);
 
 		List<Expense> expenses =  mongoTemplate.find(query, Expense.class);
@@ -153,6 +165,8 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 					e.printStackTrace();
 				}
+
+                updateNextUpcommingDateForExpenses(expense, fromdate);
 			}
 		}
 		else{
@@ -344,6 +358,66 @@ public class SchedulerServiceImpl implements SchedulerService{
 		}
 
 		return response;
+	}
+
+
+	private void updateNextUpcommingDateForExpenses(Expense expense, Date toDate) throws Exception {
+
+		String frequecy = expense.getReminder();
+		Date endDate = expense.getEndDate();
+		Calendar calendar = Calendar.getInstance();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		if (endDate.after(toDate)) {
+
+			if (ExpenseReminderFrequency.DAILY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+
+                Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
+
+				calendar.setTime(nextExecutionDate);
+				calendar.add(Calendar.DATE, 1);
+
+				SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String newNextExecutionDate = outputDateFormat.format(calendar.getTime());
+				expense.setNextExecutionDate(newNextExecutionDate);
+
+			} else if (ExpenseReminderFrequency.WEEKLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+
+                Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
+
+                calendar.setTime(nextExecutionDate);
+                calendar.add(Calendar.WEEK_OF_YEAR, 1);
+
+                SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String newNextExecutionDate = outputDateFormat.format(calendar.getTime());
+                expense.setNextExecutionDate(newNextExecutionDate);
+
+			} else if (ExpenseReminderFrequency.MONTHLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+
+                Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
+
+                calendar.setTime(nextExecutionDate);
+                calendar.add(Calendar.MONTH, 1);
+
+                SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String newNextExecutionDate = outputDateFormat.format(calendar.getTime());
+                expense.setNextExecutionDate(newNextExecutionDate);
+
+			} else if (ExpenseReminderFrequency.YEARLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+
+                Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
+
+                calendar.setTime(nextExecutionDate);
+                calendar.add(Calendar.YEAR, 1);
+
+                SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String newNextExecutionDate = outputDateFormat.format(calendar.getTime());
+                expense.setNextExecutionDate(newNextExecutionDate);
+			}
+
+            expenseDao.save(expense);
+		}
 	}
 
 }
