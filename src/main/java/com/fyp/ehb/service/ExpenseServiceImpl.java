@@ -596,7 +596,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 		
                 		hm.put("isAchieved", "Y");
                 		hm.put("percentage", "100");                   	
-                        hm.put("message", "You have exceeded your budget for this expense.");
+                        hm.put("title", ex.getExpenseTitle());
                         
                 	} else {
                     	hm.put("code", "000");
