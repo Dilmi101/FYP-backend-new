@@ -371,7 +371,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 		if (endDate.after(toDate)) {
 
-			if (ExpenseReminderFrequency.DAILY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+			if (ReminderFrequency.DAILY.getFrequencyType().equalsIgnoreCase(frequecy)) {
 
                 Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
 
@@ -382,7 +382,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 				String newNextExecutionDate = outputDateFormat.format(calendar.getTime());
 				expense.setNextExecutionDate(newNextExecutionDate);
 
-			} else if (ExpenseReminderFrequency.WEEKLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+			} else if (ReminderFrequency.WEEKLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
 
                 Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
 
@@ -393,7 +393,7 @@ public class SchedulerServiceImpl implements SchedulerService{
                 String newNextExecutionDate = outputDateFormat.format(calendar.getTime());
                 expense.setNextExecutionDate(newNextExecutionDate);
 
-			} else if (ExpenseReminderFrequency.MONTHLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+			} else if (ReminderFrequency.MONTHLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
 
                 Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
 
@@ -404,7 +404,7 @@ public class SchedulerServiceImpl implements SchedulerService{
                 String newNextExecutionDate = outputDateFormat.format(calendar.getTime());
                 expense.setNextExecutionDate(newNextExecutionDate);
 
-			} else if (ExpenseReminderFrequency.YEARLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+			} else if (ReminderFrequency.YEARLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
 
                 Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
 
