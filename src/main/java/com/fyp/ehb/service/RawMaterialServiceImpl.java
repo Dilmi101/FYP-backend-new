@@ -287,6 +287,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				if(isStockReached.equalsIgnoreCase("Y")) {
 					hm.put("code", "999");
 					hm.put("message", "You have reached the low stock level. The respective supplier has been notified.");
+					hm.put("isStockReached", "Y");
 				} else {
 	            	hm.put("code", "000");
 	                hm.put("message", "Raw material has been updated.");
