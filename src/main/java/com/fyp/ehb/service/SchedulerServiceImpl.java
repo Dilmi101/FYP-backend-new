@@ -144,6 +144,8 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 			for (Expense expense : expenses){
 
+				logger.info("Expenses list next exe date : " + expense.getNextExecutionDate());
+
 				try {
 
 					if(expense.getCustomer().getPushToken() != null && !expense.getCustomer().getPushToken().isEmpty()){
