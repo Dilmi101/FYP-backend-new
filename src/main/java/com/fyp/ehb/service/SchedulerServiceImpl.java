@@ -7,6 +7,7 @@ import java.util.concurrent.Future;
 
 import com.fyp.ehb.domain.Expense;
 import com.fyp.ehb.domain.RawMaterial;
+import com.fyp.ehb.enums.ExpenseReminderFrequency;
 import com.fyp.ehb.enums.ReminderFrequency;
 import com.fyp.ehb.model.ExpenseResponse;
 import com.fyp.ehb.model.firebase.NotificationResponse;
@@ -376,7 +377,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 		if (endDate.after(toDate)) {
 
-			if (ReminderFrequency.DAILY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+			if (ExpenseReminderFrequency.DAILY.getFrequencyType().equalsIgnoreCase(frequecy)) {
 
                 Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
 
@@ -387,7 +388,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 				String newNextExecutionDate = outputDateFormat.format(calendar.getTime());
 				expense.setNextExecutionDate(newNextExecutionDate);
 
-			} else if (ReminderFrequency.WEEKLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+			} else if (ExpenseReminderFrequency.WEEKLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
 
                 Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
 
@@ -398,7 +399,7 @@ public class SchedulerServiceImpl implements SchedulerService{
                 String newNextExecutionDate = outputDateFormat.format(calendar.getTime());
                 expense.setNextExecutionDate(newNextExecutionDate);
 
-			} else if (ReminderFrequency.MONTHLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+			} else if (ExpenseReminderFrequency.MONTHLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
 
                 Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
 
@@ -409,7 +410,7 @@ public class SchedulerServiceImpl implements SchedulerService{
                 String newNextExecutionDate = outputDateFormat.format(calendar.getTime());
                 expense.setNextExecutionDate(newNextExecutionDate);
 
-			} else if (ReminderFrequency.YEARLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
+			} else if (ExpenseReminderFrequency.YEARLY.getFrequencyType().equalsIgnoreCase(frequecy)) {
 
                 Date nextExecutionDate = formatter.parse(expense.getNextExecutionDate());
 

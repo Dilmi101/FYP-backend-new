@@ -11,14 +11,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,8 +84,17 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 		String nextExecutionDate = "";
 		try{
+
+			Calendar calendarEndDate = Calendar.getInstance();
+			calendarEndDate.setTime(startDate);
+
+			calendarEndDate.set(Calendar.HOUR, 00);
+			calendarEndDate.set(Calendar.MINUTE, 00);
+			calendarEndDate.set(Calendar.AM_PM, 0);
+			calendarEndDate.set(Calendar.SECOND, 0);
+
 			SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			nextExecutionDate = outputDateFormat.format(sDate);
+			nextExecutionDate = outputDateFormat.format(calendarEndDate.getTime());
 
 		} catch(Exception e){
 			e.printStackTrace();
