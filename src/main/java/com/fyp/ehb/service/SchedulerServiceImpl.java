@@ -143,6 +143,8 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 			for (Expense expense : expenses){
 
+				logger.info("Expenses list next exe date : " + expense.getNextExecutionDate());
+
 				try {
 
 					if(expense.getCustomer().getPushToken() != null && !expense.getCustomer().getPushToken().isEmpty()){
@@ -159,6 +161,10 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 						logger.info("Expense Reminder Push Notification Response : " + response.get().getResponseEntity());
 						logger.info("Successfully send expense reminder for id " + expense.getId());
+					}
+					else{
+
+						logger.info("Expenses push token not found for : " + expense.getId());
 					}
 				} catch (Exception e) {
 
