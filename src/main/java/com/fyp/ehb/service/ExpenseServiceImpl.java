@@ -294,6 +294,11 @@ public class ExpenseServiceImpl implements ExpenseService {
                 	expense.setProgrssPercentage(percentage.toString());
                 }
 
+                if(remaining.intValue() < 0) {
+                	remaining = new BigDecimal(0);
+                	expense.setIsAchieved("Y");
+                }
+                                
                 expense.setPendingTarget(String.valueOf(remaining));
             }
             else{
@@ -389,6 +394,11 @@ public class ExpenseServiceImpl implements ExpenseService {
             	response.setProgrssPercentage("100");
             } else {
             	response.setProgrssPercentage(percentage.toString());
+            }
+            
+            if(remaining.intValue() < 0) {
+            	remaining = new BigDecimal(0);
+            	response.setIsAchieved("Y");
             }
             
             response.setPendingTarget(String.valueOf(remaining));
