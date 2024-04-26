@@ -461,7 +461,7 @@ public class GoalServiceImpl implements GoalService {
                     }
                     
                     if(percentage >= 100) {
-                    	throw new EmpowerHerBizException(EmpowerHerBizError.GOAL_TARGET_REACHED);
+                    	hm.put("percentage", "100");
                     }
 
                     hm.put("title", goal.get().getGoalTitle());

@@ -297,8 +297,13 @@ public class ExpenseServiceImpl implements ExpenseService {
                 BigDecimal target = new BigDecimal(e.getAmount());
                 BigDecimal remaining = target.subtract(sum);//target - sum;
                 BigDecimal percentage = sum.divide(target, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+                
+                if(expense.getExpenseStatus().equalsIgnoreCase("C")) {
+                	expense.setProgrssPercentage("100");
+                } else {
+                	expense.setProgrssPercentage(percentage.toString());
+                }
 
-                expense.setProgrssPercentage(percentage.toString());
                 expense.setPendingTarget(String.valueOf(remaining));
             }
             else{
@@ -389,8 +394,13 @@ public class ExpenseServiceImpl implements ExpenseService {
             BigDecimal target = new BigDecimal(existingExpense.getAmount());
             BigDecimal remaining = target.subtract(sum);//target - sum;
             BigDecimal percentage = sum.divide(target, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-
-            response.setProgrssPercentage(percentage.toString());
+            
+            if(existingExpense.getExpenseStatus().equalsIgnoreCase("C")) {
+            	response.setProgrssPercentage("100");
+            } else {
+            	response.setProgrssPercentage(percentage.toString());
+            }
+            
             response.setPendingTarget(String.valueOf(remaining));
         }
         else{
@@ -526,7 +536,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 				Expense ex = expense.get();
 				
 				if(new BigDecimal(amount).compareTo(new BigDecimal(ex.getAmount())) == 1) {
-					throw new EmpowerHerBizException(EmpowerHerBizError.REACHED_TARGET_EXPENSE);
+					ex.setExpenseStatus("C");
 				}
 				
 				BigDecimal sum = new BigDecimal(0);
@@ -545,13 +555,15 @@ public class ExpenseServiceImpl implements ExpenseService {
                 sum = sum1.add(new BigDecimal(amount));
                 
 				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 1) {
-					throw new EmpowerHerBizException(EmpowerHerBizError.REACHED_TARGET_EXPENSE);
+					ex.setExpenseStatus("C");
 				}
                 
 				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 0) {
 					ex.setExpenseStatus("C");
-					expenseDao.save(ex);
+					
 				}
+				
+				expenseDao.save(ex);
 				
 				ExpenseHistory record = new ExpenseHistory();
 				record.setExpense(expense.get());
