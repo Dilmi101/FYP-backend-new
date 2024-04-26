@@ -2,10 +2,13 @@ package com.fyp.ehb.service;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.Future;
 
 import com.fyp.ehb.domain.Expense;
 import com.fyp.ehb.domain.RawMaterial;
 import com.fyp.ehb.enums.ReminderFrequency;
+import com.fyp.ehb.model.ExpenseResponse;
+import com.fyp.ehb.model.firebase.NotificationResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +38,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 	private GoalDao goalDao;
 
 	@Override
-	@Scheduled(cron = "${goal.reminder.cron}")
+//	@Scheduled(cron = "${goal.reminder.cron}")
 	public void goalReminder() throws Exception {
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -102,7 +105,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 
 	@Override
-	@Scheduled(cron = "${expense.reminder.cron}")
+//	@Scheduled(cron = "${expense.reminder.cron}")
 	public void expenseReminder() throws Exception {
 
 		logger.info("starting expenses reminder scheduler....");
@@ -123,6 +126,8 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 		List<Expense> expenses =  mongoTemplate.find(query, Expense.class);
 
+		logger.info("Expenses list size : " + expenses.size());
+
 		if(expenses != null && !expenses.isEmpty()){
 
 			for (Expense expense : expenses){
@@ -139,7 +144,10 @@ public class SchedulerServiceImpl implements SchedulerService{
 						notificationRequest.setTo(expense.getCustomer().getPushToken());
 						notificationRequest.setNotification(notificationDataRequest);
 
-						notificationService.sendPushNotification(notificationRequest);
+						Future<NotificationResponse> response = notificationService.sendPushNotification(notificationRequest);
+
+						logger.info("Expense Reminder Push Notification Response : " + response.get().getResponseEntity());
+						logger.info("Successfully send expense reminder for id " + expense.getId());
 					}
 				} catch (Exception e) {
 
@@ -147,11 +155,15 @@ public class SchedulerServiceImpl implements SchedulerService{
 				}
 			}
 		}
+		else{
+
+			logger.info("No expenses found for reminder....");
+		}
 		
 	}
 
 	@Override
-	@Scheduled(cron = "${rowmaterials.reminder.cron}")
+//	@Scheduled(cron = "${rowmaterials.reminder.cron}")
 	public void rowmaterialsReminder() throws Exception {
 
 		Query query = new Query();
@@ -170,7 +182,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 						PushNotificationDataRequest notificationDataRequest = new PushNotificationDataRequest();
 						notificationDataRequest.setTitle("Keep Going!");
-						notificationDataRequest.setBody("Just a quick to reminder record your expenses - " + rawMaterial.getName());
+						notificationDataRequest.setBody("Just a quick reminder to update your - " + rawMaterial.getName());
 
 						PushNotificationRequest notificationRequest = new PushNotificationRequest();
 						notificationRequest.setTo(rawMaterial.getCustomer().getPushToken());
@@ -188,7 +200,7 @@ public class SchedulerServiceImpl implements SchedulerService{
 	}
 
 	@Override
-	@Scheduled(cron = "${reminde.unfinished.goal.status.cron}")
+//	@Scheduled(cron = "${reminde.unfinished.goal.status.cron}")
 	public void remindeUnfinishedGoalStatus() throws Exception {
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -291,6 +303,47 @@ public class SchedulerServiceImpl implements SchedulerService{
 
 			goalDao.save(goal);
 		}
+	}
+
+	@Override
+	public List<ExpenseResponse> expenseReminderListGet() throws Exception {
+
+		logger.info("starting expenses reminder scheduler....");
+
+		Calendar calendarEndDate = Calendar.getInstance();
+		calendarEndDate.setTime(new Date());
+
+		calendarEndDate.set(Calendar.HOUR, 00);
+		calendarEndDate.set(Calendar.MINUTE, 00);
+		calendarEndDate.set(Calendar.AM_PM, 0);
+		calendarEndDate.set(Calendar.SECOND, 0);
+
+		Date endDate = calendarEndDate.getTime();
+
+		Query query = new Query();
+		Criteria c = new Criteria().andOperator(Criteria.where("endDate").lte(endDate));
+		query.addCriteria(c);
+
+		List<Expense> expenses = mongoTemplate.find(query, Expense.class);
+
+		List<ExpenseResponse> response = new ArrayList<>();
+
+		if(expenses != null && !expenses.isEmpty()){
+
+			for(Expense expense : expenses){
+
+				ExpenseResponse expenseResponse = new ExpenseResponse();
+				expenseResponse.setId(expense.getId());
+				expenseResponse.setExpenseTitle(expense.getExpenseTitle());
+
+				response.add(expenseResponse);
+			}
+		}
+		else{
+			logger.info("No expenses found for reminder");
+		}
+
+		return response;
 	}
 
 }

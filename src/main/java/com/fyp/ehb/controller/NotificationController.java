@@ -1,12 +1,14 @@
 package com.fyp.ehb.controller;
 
 import com.fyp.ehb.model.AddExpenseRequest;
+import com.fyp.ehb.model.ExpenseResponse;
 import com.fyp.ehb.model.MainResponse;
 import com.fyp.ehb.service.SchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/notification")
@@ -27,7 +29,7 @@ public class NotificationController {
         return mainResponse;
     }
 
-    @PostMapping(value="/remindeUnfinishedGoalStatus")
+    @PostMapping(value="/failedGoalNotification")
     public MainResponse remindeUnfinishedGoalStatus() throws Exception {
 
         schedulerService.remindeUnfinishedGoalStatus();
@@ -39,7 +41,7 @@ public class NotificationController {
         return mainResponse;
     }
 
-    @PostMapping(value="/rowmaterialsReminder")
+    @PostMapping(value="/rawmaterialsReminder")
     public MainResponse rowmaterialsReminder() throws Exception {
 
         schedulerService.rowmaterialsReminder();
@@ -59,6 +61,18 @@ public class NotificationController {
         MainResponse mainResponse = new MainResponse();
         mainResponse.setResponseCode("000");
         mainResponse.setResponseObject("Sent Expense Reminder");
+
+        return mainResponse;
+    }
+
+    @GetMapping(value="/expenseReminderGet")
+    public MainResponse expenseReminderListGet() throws Exception {
+
+        List<ExpenseResponse> response = schedulerService.expenseReminderListGet();
+
+        MainResponse mainResponse = new MainResponse();
+        mainResponse.setResponseCode("000");
+        mainResponse.setResponseObject(response);
 
         return mainResponse;
     }
