@@ -28,5 +28,6 @@ public class ExpenseResponse {
 	private String progrssPercentage;
     private String pendingTarget;
     private String isDashboardItem;
+    private String isAchieved;
     private List<ExpenseHistoryMain> historyRecords;
 }
