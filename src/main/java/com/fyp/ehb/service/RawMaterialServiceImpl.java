@@ -227,18 +227,30 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		
 		HashMap<String, String> hm = new HashMap<>();
 		Optional<RawMaterial> rawMaterial = rawMaterialDao.findById(id);
+		String isStockReached = "N";
 		
 		if(rawMaterial.isPresent()) {
 			
 			RawMaterial raw = rawMaterial.get();
 			int sum = Integer.parseInt(raw.getRemainingStock());
 			
-			if(unit > sum && action.equalsIgnoreCase("USED")) {
-				throw new EmpowerHerBizException(EmpowerHerBizError.YOU_HAVE_REACHED_LOW_STOCK_LEVEL);
+			if(unit > Integer.parseInt(raw.getLowStockLvl()) && action.equalsIgnoreCase("USED")) {				
+				isStockReached = "Y";
+			}
+			
+			if(unit > sum && action.equalsIgnoreCase("USED")) {				
+				isStockReached = "Y";
 			}
 			
 			if(sum > 0 && action.equalsIgnoreCase("USED")) {
+				
+				isStockReached = "Y";
+				
 				sum = sum - unit;
+				
+				if(sum < 0) {
+					sum = 0;
+				}
 			}
 			
 			if(action.equalsIgnoreCase("REFILL")) {
@@ -255,8 +267,9 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				}
 			}
 			
+			
 			if(Integer.parseInt(raw.getLowStockLvl()) >= sum) {
-				throw new EmpowerHerBizException(EmpowerHerBizError.YOU_HAVE_REACHED_LOW_STOCK_LEVEL);
+				isStockReached = "Y";
 			}
 			
 			RawMaterialHistory record = new RawMaterialHistory();
@@ -270,8 +283,15 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 			raw = rawMaterialDao.save(raw);
 			
 			if(record != null){
-            	hm.put("code", "000");
-                hm.put("message", "Raw material has been updated.");
+				
+				if(isStockReached.equalsIgnoreCase("Y")) {
+					hm.put("code", "999");
+					hm.put("message", "You have reached the low stock level. The respective supplier has been notified.");
+				} else {
+	            	hm.put("code", "000");
+	                hm.put("message", "Raw material has been updated.");
+				}
+
             }
             else{
             	hm.put("code", "999");
