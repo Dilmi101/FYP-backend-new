@@ -291,6 +291,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				} else {
 	            	hm.put("code", "000");
 	                hm.put("message", "Raw material has been updated.");
+	                hm.put("isStockReached", "N");
 				}
 
             }
