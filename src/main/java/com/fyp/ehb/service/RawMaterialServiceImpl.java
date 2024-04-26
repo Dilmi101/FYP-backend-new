@@ -94,15 +94,39 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		if(!existingRawMaterial.isPresent()) {
 			throw new EmpowerHerBizException(EmpowerHerBizError.RAW_MATERIAL_CANNOT_FOUND);
 		} else {
-			existingRaw.setAvailability(addRawMaterialRequest.getAvailability());
-			existingRaw.setLowStockLvl(String.valueOf(addRawMaterialRequest.getLowStockLevel()));
-			existingRaw.setName(addRawMaterialRequest.getRawMaterialName());
-			existingRaw.setRemainingStock(String.valueOf(addRawMaterialRequest.getLowStockLevel()));
-			existingRaw.setReminder(addRawMaterialRequest.getReminder());
-			existingRaw.setSupplierEmail(addRawMaterialRequest.getSupplierEmailAddress());
-			existingRaw.setSupplierName(addRawMaterialRequest.getSupplierName());
-			existingRaw.setUnit(addRawMaterialRequest.getUnit());
 			
+			if(addRawMaterialRequest.getAvailability() != null && !addRawMaterialRequest.getAvailability().isEmpty()) {
+				existingRaw.setAvailability(addRawMaterialRequest.getAvailability());
+			}
+			
+			if(addRawMaterialRequest.getLowStockLevel() > 0) {
+				existingRaw.setLowStockLvl(String.valueOf(addRawMaterialRequest.getLowStockLevel()));
+			}
+			
+			if(addRawMaterialRequest.getRawMaterialName() != null && !addRawMaterialRequest.getRawMaterialName().isEmpty()) {
+				existingRaw.setName(addRawMaterialRequest.getRawMaterialName());
+			}
+			
+			if(addRawMaterialRequest.getStockRemaining() > 0) {
+				existingRaw.setRemainingStock(String.valueOf(addRawMaterialRequest.getStockRemaining()));
+			}
+			
+			if(addRawMaterialRequest.getReminder() != null && !addRawMaterialRequest.getReminder().isEmpty()) {
+				existingRaw.setReminder(addRawMaterialRequest.getReminder());
+			}
+			
+			if(addRawMaterialRequest.getSupplierEmailAddress() != null && !addRawMaterialRequest.getSupplierEmailAddress().isEmpty()) {
+				existingRaw.setSupplierEmail(addRawMaterialRequest.getSupplierEmailAddress());
+			}
+			
+			if(addRawMaterialRequest.getSupplierName() != null && !addRawMaterialRequest.getSupplierName().isEmpty()) {
+				existingRaw.setSupplierName(addRawMaterialRequest.getSupplierName());
+			}
+			
+			if(addRawMaterialRequest.getUnit() != null && !addRawMaterialRequest.getUnit().isEmpty()) {
+				existingRaw.setUnit(addRawMaterialRequest.getUnit());
+			}
+						
 			existingRaw = rawMaterialDao.save(existingRaw);
 			
 			if(existingRaw == null) {
@@ -296,6 +320,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 					
 				}
 				
+				response.setRawHistoryList(rawHistoryList);
 				response.setAvailability(availability);
 				response.setName(raw.getName());
 				response.setRawMateId(raw.getId());
@@ -308,7 +333,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				response.setStatus(raw.getStatus());
 				
 			} else {
-				response.setRawHistoryList(rawHistoryList);
+				
 				response.setAvailability(availability);
 				response.setName(raw.getName());
 				response.setRawMateId(raw.getId());
