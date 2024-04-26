@@ -94,15 +94,39 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		if(!existingRawMaterial.isPresent()) {
 			throw new EmpowerHerBizException(EmpowerHerBizError.RAW_MATERIAL_CANNOT_FOUND);
 		} else {
-			existingRaw.setAvailability(addRawMaterialRequest.getAvailability());
-			existingRaw.setLowStockLvl(String.valueOf(addRawMaterialRequest.getLowStockLevel()));
-			existingRaw.setName(addRawMaterialRequest.getRawMaterialName());
-			existingRaw.setRemainingStock(String.valueOf(addRawMaterialRequest.getLowStockLevel()));
-			existingRaw.setReminder(addRawMaterialRequest.getReminder());
-			existingRaw.setSupplierEmail(addRawMaterialRequest.getSupplierEmailAddress());
-			existingRaw.setSupplierName(addRawMaterialRequest.getSupplierName());
-			existingRaw.setUnit(addRawMaterialRequest.getUnit());
 			
+			if(addRawMaterialRequest.getAvailability() != null && !addRawMaterialRequest.getAvailability().isEmpty()) {
+				existingRaw.setAvailability(addRawMaterialRequest.getAvailability());
+			}
+			
+			if(addRawMaterialRequest.getLowStockLevel() > 0) {
+				existingRaw.setLowStockLvl(String.valueOf(addRawMaterialRequest.getLowStockLevel()));
+			}
+			
+			if(addRawMaterialRequest.getRawMaterialName() != null && !addRawMaterialRequest.getRawMaterialName().isEmpty()) {
+				existingRaw.setName(addRawMaterialRequest.getRawMaterialName());
+			}
+			
+			if(addRawMaterialRequest.getStockRemaining() > 0) {
+				existingRaw.setRemainingStock(String.valueOf(addRawMaterialRequest.getStockRemaining()));
+			}
+			
+			if(addRawMaterialRequest.getReminder() != null && !addRawMaterialRequest.getReminder().isEmpty()) {
+				existingRaw.setReminder(addRawMaterialRequest.getReminder());
+			}
+			
+			if(addRawMaterialRequest.getSupplierEmailAddress() != null && !addRawMaterialRequest.getSupplierEmailAddress().isEmpty()) {
+				existingRaw.setSupplierEmail(addRawMaterialRequest.getSupplierEmailAddress());
+			}
+			
+			if(addRawMaterialRequest.getSupplierName() != null && !addRawMaterialRequest.getSupplierName().isEmpty()) {
+				existingRaw.setSupplierName(addRawMaterialRequest.getSupplierName());
+			}
+			
+			if(addRawMaterialRequest.getUnit() != null && !addRawMaterialRequest.getUnit().isEmpty()) {
+				existingRaw.setUnit(addRawMaterialRequest.getUnit());
+			}
+						
 			existingRaw = rawMaterialDao.save(existingRaw);
 			
 			if(existingRaw == null) {
@@ -203,18 +227,30 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		
 		HashMap<String, String> hm = new HashMap<>();
 		Optional<RawMaterial> rawMaterial = rawMaterialDao.findById(id);
+		String isStockReached = "N";
 		
 		if(rawMaterial.isPresent()) {
 			
 			RawMaterial raw = rawMaterial.get();
 			int sum = Integer.parseInt(raw.getRemainingStock());
 			
-			if(unit > sum && action.equalsIgnoreCase("USED")) {
-				throw new EmpowerHerBizException(EmpowerHerBizError.YOU_HAVE_REACHED_LOW_STOCK_LEVEL);
+			if(unit > Integer.parseInt(raw.getLowStockLvl()) && action.equalsIgnoreCase("USED")) {				
+				isStockReached = "Y";
+			}
+			
+			if(unit > sum && action.equalsIgnoreCase("USED")) {				
+				isStockReached = "Y";
 			}
 			
 			if(sum > 0 && action.equalsIgnoreCase("USED")) {
+				
+				isStockReached = "Y";
+				
 				sum = sum - unit;
+				
+				if(sum < 0) {
+					sum = 0;
+				}
 			}
 			
 			if(action.equalsIgnoreCase("REFILL")) {
@@ -231,8 +267,9 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				}
 			}
 			
+			
 			if(Integer.parseInt(raw.getLowStockLvl()) >= sum) {
-				throw new EmpowerHerBizException(EmpowerHerBizError.YOU_HAVE_REACHED_LOW_STOCK_LEVEL);
+				isStockReached = "Y";
 			}
 			
 			RawMaterialHistory record = new RawMaterialHistory();
@@ -246,8 +283,15 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 			raw = rawMaterialDao.save(raw);
 			
 			if(record != null){
-            	hm.put("code", "000");
-                hm.put("message", "Raw material has been updated.");
+				
+				if(isStockReached.equalsIgnoreCase("Y")) {
+					hm.put("code", "999");
+					hm.put("message", "You have reached the low stock level. The respective supplier has been notified.");
+				} else {
+	            	hm.put("code", "000");
+	                hm.put("message", "Raw material has been updated.");
+				}
+
             }
             else{
             	hm.put("code", "999");
@@ -296,6 +340,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 					
 				}
 				
+				response.setRawHistoryList(rawHistoryList);
 				response.setAvailability(availability);
 				response.setName(raw.getName());
 				response.setRawMateId(raw.getId());
@@ -308,7 +353,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 				response.setStatus(raw.getStatus());
 				
 			} else {
-				response.setRawHistoryList(rawHistoryList);
+				
 				response.setAvailability(availability);
 				response.setName(raw.getName());
 				response.setRawMateId(raw.getId());

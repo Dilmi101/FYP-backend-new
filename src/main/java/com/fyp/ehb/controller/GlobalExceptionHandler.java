@@ -28,14 +28,14 @@ public class GlobalExceptionHandler {
 		StringWriter stack = new StringWriter();
 		error.printStackTrace(new PrintWriter(stack));
 		
-		logger.info("Start logging chatbot integration Exception...");
+		logger.info("Start logging Exception...");
 		logger.error("Error Code :: "+error.getErrorCode());
 		logger.error("Error Message :: "+error.getErrorMessage());
 		logger.info("Logging Exception Details...");
 		logger.info("Class Name :: "+error.getStackTrace()[0].getClassName());
 		logger.info("Method Name :: "+error.getStackTrace()[0].getMethodName());
 		logger.info("Line Number :: "+error.getStackTrace()[0].getLineNumber());
-		logger.info("Done logging Ipay Exception...\n");
+		logger.info("Done logging Exception...\n");
 		
 		EmpowerHerBizErrorResponse empError = new EmpowerHerBizErrorResponse();
 		empError.setErrorCode(error.getErrorCode());

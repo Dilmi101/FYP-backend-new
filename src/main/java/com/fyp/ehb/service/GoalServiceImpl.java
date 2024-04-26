@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -285,6 +286,10 @@ public class GoalServiceImpl implements GoalService {
                     double percentage = (sum / target) * 100;
                     double remaining = target - sum;
                     
+                    if(percentage > 100) {
+                    	percentage = 100;
+                    }
+                    
                     if(remaining < 0) {
                     	goalResponse.setPendingTarget(String.valueOf(0));
                     } else {
@@ -351,6 +356,10 @@ public class GoalServiceImpl implements GoalService {
                 double remaining = target - sum;
                 double percentage = (sum / target) * 100;
                 
+                if(percentage > 100) {
+                	percentage = 100;
+                }
+                
                 if(remaining < 0) {
                 	goalResponse.setPendingTarget(String.valueOf(0));
                 } else {
@@ -372,6 +381,7 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, String> updateGoalProgress(String id, String amount) throws Exception {
 
         Optional<Goal> goal = goalDao.findById(id);
@@ -417,9 +427,6 @@ public class GoalServiceImpl implements GoalService {
                     double target = Double.parseDouble(goal.get().getTarget());
                     double percentage = (sum / target) * 100;
                     
-                    if(percentage >= 100) {
-                    	throw new EmpowerHerBizException(EmpowerHerBizError.GOAL_TARGET_REACHED);
-                    }
 
                     if(sum >= target){
                         hm.put("isAchieved", Status.YES_STATUS.getStatus());
@@ -451,6 +458,10 @@ public class GoalServiceImpl implements GoalService {
                         catch (Exception e){
                             e.printStackTrace();
                         }
+                    }
+                    
+                    if(percentage >= 100) {
+                    	throw new EmpowerHerBizException(EmpowerHerBizError.GOAL_TARGET_REACHED);
                     }
 
                     hm.put("title", goal.get().getGoalTitle());
