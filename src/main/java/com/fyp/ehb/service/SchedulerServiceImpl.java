@@ -163,6 +163,10 @@ public class SchedulerServiceImpl implements SchedulerService{
 						logger.info("Expense Reminder Push Notification Response : " + response.get().getResponseEntity());
 						logger.info("Successfully send expense reminder for id " + expense.getId());
 					}
+					else{
+
+						logger.info("Expenses push token not found for : " + expense.getId());
+					}
 				} catch (Exception e) {
 
 					e.printStackTrace();
