@@ -541,6 +541,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	public HashMap<String, String> updateExpenseProgressById(String id, String amount) throws Exception {
 
 		Optional<Expense> expense = expenseDao.findById(id);
+		String isAchieved = "N";
 		
 		if(expense.isPresent()) {
 			if(Double.parseDouble(amount) > 0) {
@@ -568,10 +569,12 @@ public class ExpenseServiceImpl implements ExpenseService {
                 
 				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 1) {
 					ex.setExpenseStatus("C");
+					isAchieved = "Y";
 				}
                 
 				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 0) {
 					ex.setExpenseStatus("C");
+					isAchieved = "Y";
 					
 				}
 				
@@ -590,8 +593,18 @@ public class ExpenseServiceImpl implements ExpenseService {
                 HashMap<String, String> hm = new HashMap<>();
 
                 if(record != null){
-                	hm.put("code", "000");
-                    hm.put("message", "Your expense has been successfully recorded.");
+                	
+                	if(isAchieved.equalsIgnoreCase("Y")) {
+                		
+                		hm.put("isAchieved", "Y");
+                		hm.put("percentage", "100");                   	
+                        hm.put("message", "You have exceeded your budget for this expense.");
+                        
+                	} else {
+                    	hm.put("code", "000");
+                        hm.put("message", "Your expense has been successfully recorded.");
+                	}
+
                 }
                 else{
                 	hm.put("code", "999");
