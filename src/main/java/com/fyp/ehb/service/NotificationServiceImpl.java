@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.Future;
 
-import com.fyp.ehb.model.EmailRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +73,6 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 
 	@Override
-	@Async
 	public void sendSimpleMail(String recipient, String supplierName, String RawMaterialName, String businessName) throws Exception {
 
 		try {
