@@ -572,11 +572,11 @@ public class ExpenseServiceImpl implements ExpenseService {
 					isAchieved = "Y";
 				}
                 
-				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 0) {
-					ex.setExpenseStatus("C");
-					isAchieved = "Y";
-					
-				}
+//				if(sum.compareTo(new BigDecimal(ex.getAmount())) == 0) {
+//					ex.setExpenseStatus("C");
+//					isAchieved = "Y";
+//					
+//				}
 				
 				expenseDao.save(ex);
 				
