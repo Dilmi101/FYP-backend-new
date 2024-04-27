@@ -75,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService{
 
 	@Override
 	@Async
-	public String sendSimpleMail(String recipient, String supplierName, String RawMaterialName, String businessName) throws Exception {
+	public void sendSimpleMail(String recipient, String supplierName, String RawMaterialName, String businessName) throws Exception {
 
 		try {
 
@@ -97,11 +97,11 @@ public class NotificationServiceImpl implements NotificationService{
 
 			javaMailSender.send(simpleMailMessage);
 
-			return "Email Sent";
+			logger.info("Email sent successfully to " + recipient + " at " + new Date());
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "Failed";
+			logger.info("Email sent failed to " + recipient + " at " + new Date());
 		}
 
 	}

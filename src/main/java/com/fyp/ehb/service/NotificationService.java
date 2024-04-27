@@ -9,5 +9,5 @@ import com.fyp.ehb.model.firebase.PushNotificationRequest;
 public interface NotificationService {
 
 	public Future<NotificationResponse> sendPushNotification(PushNotificationRequest pushNotificationRequest) throws Exception;
-	String sendSimpleMail(String recipient, String supplierName, String RawMaterialName, String businessName) throws Exception;
+	public void sendSimpleMail(String recipient, String supplierName, String RawMaterialName, String businessName) throws Exception;
 }
