@@ -83,7 +83,7 @@ public class NotificationServiceImpl implements NotificationService{
 			data.put("businessName", businessName);
 
 			String messageBody = "Dear " + supplierName + "\n\n" +
-					"The inventory of " + RawMaterialName + " at " +  businessName + " is running low. The business owner will contact you shortly to place an order for replenishment.\n\n" +
+					"The inventory of " + RawMaterialName + " at " +  businessName + " is running low. The business owner will contact you shortly to place an order for replenishment. or you can proactively contact the business owner and get an order confirmation.\n\n" +
 					"Thank you.\n\n";
 
 			SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
